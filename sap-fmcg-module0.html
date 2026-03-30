@@ -1,0 +1,2974 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAP for FMCG - Offline Learning Studio</title>
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --surface2: #1f1f1f;
+    --surface3: #252525;
+    --border: #2a2a2a;
+    --text: #e8e2d9;
+    --text-dim: #9a958f;
+    --text-muted: #5e5955;
+    --accent: #d4a84b;
+    --accent2: #6bb89e;
+    --accent3: #c96b5a;
+    --mm: #5b8dd9;
+    --scm: #58b2a9;
+    --fi: #6bb89e;
+    --cust: #d4a84b;
+    --sapbar: #d5d8df;
+    --sappanel: #edf1f7;
+    --sapline: #b6c1d0;
+    --saptext: #223046;
+    --shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background:
+      radial-gradient(circle at top left, rgba(212, 168, 75, 0.08), transparent 30%),
+      radial-gradient(circle at top right, rgba(91, 141, 217, 0.09), transparent 28%),
+      linear-gradient(180deg, #0d0d0d 0%, #111 100%);
+    color: var(--text);
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans", Arial, sans-serif;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  button, input, select, textarea {
+    font: inherit;
+  }
+
+  .mono {
+    font-family: "Consolas", "SFMono-Regular", "Liberation Mono", monospace;
+    letter-spacing: 0.03em;
+  }
+
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--mm));
+    z-index: 300;
+    transition: width 0.25s ease;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(14, 14, 14, 0.88);
+    backdrop-filter: blur(14px);
+  }
+
+  .logo {
+    color: var(--text-dim);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .pill {
+    padding: 0.38rem 0.72rem;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .lang-switcher {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .lang-btn,
+  .mini-btn,
+  .btn,
+  .sim-tab,
+  .course-tab {
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: 0.18s ease;
+  }
+
+  .lang-btn {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.72rem;
+  }
+
+  .lang-btn.active,
+  .mini-btn:hover,
+  .btn:hover,
+  .sim-tab.active,
+  .course-tab.active,
+  .lang-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .hero {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 5.2rem 2rem 3.2rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+    gap: 2rem;
+    align-items: end;
+  }
+
+  .eyebrow {
+    color: var(--text-muted);
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+
+  h1 {
+    font-size: clamp(2.6rem, 6vw, 4.8rem);
+    line-height: 1.02;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.3rem;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .hero-desc {
+    max-width: 700px;
+    color: var(--text-dim);
+    font-size: 1.04rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1.6rem;
+  }
+
+  .btn {
+    padding: 0.82rem 1.15rem;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .btn.primary {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .hero-panel,
+  .content-card,
+  .module-detail,
+  .simulator-wrap,
+  .case-grid,
+  .quiz-container,
+  .table-wrap,
+  .roadmap {
+    background: rgba(22, 22, 22, 0.95);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  .hero-panel {
+    padding: 1.4rem;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .hero-hint {
+    margin-top: 0.95rem;
+    color: var(--text-muted);
+    font-size: 0.84rem;
+  }
+
+  .hero-panel-title {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+  }
+
+  .hero-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+
+  .hero-stat {
+    padding: 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  .hero-stat strong {
+    display: block;
+    font-size: 1.3rem;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+
+  .hero-stat span {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+  }
+
+  .focus-box {
+    padding: 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  .focus-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .focus-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.28rem 0.55rem;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 0.72rem;
+    background: rgba(212, 168, 75, 0.08);
+  }
+
+  .focus-tag button {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 0.82rem;
+    line-height: 1;
+  }
+
+  main section {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+
+  main section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-label {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    margin-bottom: 1.3rem;
+    text-transform: uppercase;
+  }
+
+  .section-label::after {
+    content: "";
+    height: 1px;
+    background: var(--border);
+    flex: 1;
+  }
+
+  h2 {
+    font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+    line-height: 1.12;
+    margin-bottom: 1rem;
+  }
+
+  .section-intro {
+    color: var(--text-dim);
+    max-width: 780px;
+    margin-bottom: 2rem;
+  }
+
+  .roadmap {
+    padding: 1.5rem;
+  }
+
+  .roadmap-head,
+  .quiz-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.3rem;
+  }
+
+  .roadmap-track,
+  .quiz-track {
+    height: 4px;
+    background: var(--border);
+    overflow: hidden;
+  }
+
+  .roadmap-fill,
+  .quiz-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.25s ease;
+  }
+
+  .course-tabs,
+  .sim-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .course-tab,
+  .sim-tab {
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .course-panel,
+  .sim-panel {
+    display: none;
+  }
+
+  .course-panel.active,
+  .sim-panel.active,
+  .module-detail.active {
+    display: block;
+  }
+
+  .lesson-grid,
+  .module-grid,
+  .safe-grid,
+  .case-grid,
+  .customer-grid,
+  .finance-grid,
+  .supply-grid,
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .lesson-block,
+  .module-card,
+  .module-mini,
+  .safe-card,
+  .case-card,
+  .scenario-card,
+  .explain-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.2rem;
+  }
+
+  .scenario-card {
+    border-left: 3px solid var(--accent);
+  }
+
+  .card-label {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    margin-bottom: 0.7rem;
+  }
+
+  .card-title {
+    font-size: 1.08rem;
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+  }
+
+  .list {
+    display: grid;
+    gap: 0.45rem;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+
+  .list div::before {
+    content: "— ";
+    color: var(--text-muted);
+  }
+
+  .flow-container {
+    overflow-x: auto;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .flow-row {
+    min-width: 980px;
+    display: flex;
+    align-items: stretch;
+    gap: 0.7rem;
+  }
+
+  .flow-step {
+    width: 210px;
+    cursor: pointer;
+  }
+
+  .flow-box {
+    height: 100%;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  }
+
+  .flow-step:hover .flow-box,
+  .flow-step.active .flow-box {
+    transform: translateY(-4px);
+    border-color: currentColor;
+  }
+
+  .flow-step.mm { color: var(--mm); }
+  .flow-step.scm { color: var(--scm); }
+  .flow-step.fi { color: var(--fi); }
+  .flow-step.cust { color: var(--cust); }
+
+  .flow-box h3 {
+    color: var(--text);
+    font-size: 1rem;
+    margin: 0.4rem 0;
+  }
+
+  .flow-box p {
+    color: var(--text-dim);
+    font-size: 0.84rem;
+  }
+
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+  }
+
+  .module-detail {
+    display: none;
+    margin-top: 1rem;
+    padding: 1.4rem;
+  }
+
+  .detail-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .detail-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 1rem;
+  }
+
+  .tag-row,
+  .micro-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.75rem;
+  }
+
+  .tag,
+  .tcode-tag,
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .tcode-tag {
+    cursor: pointer;
+  }
+
+  .glossary-term {
+    color: var(--accent);
+    border-bottom: 1px dashed rgba(212, 168, 75, 0.6);
+    cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  }
+
+  .glossary-term:hover {
+    color: #f0c86e;
+    border-color: #f0c86e;
+    background: rgba(212, 168, 75, 0.08);
+  }
+
+  .tag.mm { border-color: var(--mm); color: var(--mm); }
+  .tag.scm { border-color: var(--scm); color: var(--scm); }
+  .tag.fi { border-color: var(--fi); color: var(--fi); }
+  .tag.cust { border-color: var(--cust); color: var(--cust); }
+
+  .table-wrap {
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 1rem 1rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+    font-size: 0.9rem;
+  }
+
+  th {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+  }
+
+  tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .simulator-wrap {
+    padding: 1.4rem;
+  }
+
+  .sim-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .simulator-box {
+    border: 1px solid #6d7d94;
+    background: var(--sapbar);
+    overflow: hidden;
+  }
+
+  .sap-titlebar {
+    background: linear-gradient(180deg, #9eb2cc 0%, #879eba 100%);
+    color: #18263a;
+    padding: 0.55rem 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .sap-toolbar {
+    display: flex;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--sapline);
+    background: #dfe5ee;
+    color: var(--saptext);
+    font-size: 0.78rem;
+  }
+
+  .sap-shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    min-height: 560px;
+    background: var(--sappanel);
+    color: var(--saptext);
+  }
+
+  .sap-side {
+    background: #dbe4f0;
+    border-right: 1px solid var(--sapline);
+    padding: 1rem;
+  }
+
+  .sap-side h3,
+  .sap-main h3 {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    color: #4d5e77;
+  }
+
+  .sap-tree {
+    display: grid;
+    gap: 0.45rem;
+    font-size: 0.84rem;
+  }
+
+  .sap-tree div {
+    padding: 0.4rem 0.5rem;
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  .sap-tree div.active {
+    border-color: #8095b2;
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  .sap-main {
+    padding: 1rem;
+  }
+
+  .sap-command {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr) auto;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    align-items: center;
+  }
+
+  .sap-label {
+    font-size: 0.8rem;
+    color: #4d5e77;
+  }
+
+  .sap-input,
+  .sap-select {
+    border: 1px solid #96a6bc;
+    background: #fff;
+    color: #263449;
+    padding: 0.55rem 0.65rem;
+  }
+
+  .sap-run {
+    border: 1px solid #7489a7;
+    background: #f8fbff;
+    color: #263449;
+    padding: 0.58rem 0.95rem;
+    cursor: pointer;
+  }
+
+  .sap-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .sap-panel {
+    background: #ffffff;
+    border: 1px solid #b7c5d8;
+    padding: 0.9rem;
+  }
+
+  .sap-panel h4 {
+    font-size: 0.84rem;
+    margin-bottom: 0.55rem;
+    color: #334661;
+  }
+
+  .sap-table-wrap {
+    overflow: auto;
+    border: 1px solid #b7c5d8;
+    background: #fff;
+  }
+
+  .sap-table {
+    min-width: 680px;
+    color: #263449;
+  }
+
+  .sap-table th,
+  .sap-table td {
+    border-bottom: 1px solid #d6dfeb;
+    padding: 0.7rem;
+    font-size: 0.8rem;
+  }
+
+  .sap-table th {
+    color: #536681;
+    background: #f4f7fb;
+  }
+
+  .safe-grid {
+    margin-top: 1.2rem;
+  }
+
+  .safe-card strong {
+    display: block;
+    margin-bottom: 0.45rem;
+  }
+
+  .quiz-container {
+    padding: 1.5rem;
+  }
+
+  .quiz-question {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+  }
+
+  .quiz-context {
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+    padding: 0.9rem 1rem;
+    border-left: 2px solid var(--border);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .quiz-options {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .quiz-option {
+    padding: 0.95rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .quiz-option.correct {
+    border-color: var(--fi);
+    color: var(--fi);
+  }
+
+  .quiz-option.wrong {
+    border-color: var(--accent3);
+    color: var(--accent3);
+  }
+
+  .quiz-option[disabled] {
+    cursor: default;
+    opacity: 0.96;
+  }
+
+  .quiz-feedback {
+    margin-top: 1rem;
+    padding: 1rem;
+    display: none;
+    color: var(--text-dim);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .quiz-feedback.show {
+    display: block;
+  }
+
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .glossary-card {
+    position: fixed;
+    right: 1.2rem;
+    bottom: 1.2rem;
+    width: min(420px, calc(100vw - 2rem));
+    background: rgba(17, 17, 17, 0.98);
+    border: 1px solid var(--accent);
+    box-shadow: var(--shadow);
+    z-index: 400;
+    display: none;
+  }
+
+  .glossary-card.active {
+    display: block;
+    animation: liftIn 0.24s ease;
+  }
+
+  @keyframes liftIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .glossary-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.95rem 1rem 0.6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glossary-card-body {
+    padding: 1rem;
+  }
+
+  .glossary-meta {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+  }
+
+  .glossary-title {
+    font-size: 1.15rem;
+    margin-top: 0.25rem;
+    font-weight: 700;
+  }
+
+  .glossary-close {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  .glossary-copy {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 0.8rem;
+  }
+
+  .glossary-subtitle {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .glossary-animation {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+    margin: 0.85rem 0 0.45rem;
+  }
+
+  .glossary-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--accent);
+    animation: pulseChain 1.2s infinite ease-in-out;
+  }
+
+  .glossary-dot:nth-child(2) { animation-delay: 0.16s; }
+  .glossary-dot:nth-child(3) { animation-delay: 0.32s; }
+
+  @keyframes pulseChain {
+    0%, 100% { opacity: 0.28; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.14); }
+  }
+
+  .glossary-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+
+  .glossary-actions a,
+  .glossary-actions button {
+    padding: 0.62rem 0.85rem;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    background: var(--surface2);
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.76rem;
+  }
+
+  .glossary-actions a:hover,
+  .glossary-actions button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .glossary-empty {
+    color: var(--text-muted);
+    font-size: 0.84rem;
+  }
+
+  footer {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--text-muted);
+    font-size: 0.74rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  @media (max-width: 980px) {
+    .hero,
+    .detail-grid,
+    .sap-shell,
+    .lesson-grid,
+    .module-grid,
+    .safe-grid,
+    .scenario-grid,
+    .case-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sap-command,
+    .hero-stat-grid,
+    .sap-info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    header,
+    .hero,
+    main section,
+    footer {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    header,
+    footer,
+    .roadmap-head,
+    .quiz-head,
+    .sim-head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .glossary-card {
+      right: 1rem;
+      bottom: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+
+<header>
+  <div class="logo mono" id="logoText">SAP for FMCG · Offline Studio</div>
+  <div class="header-actions">
+    <div class="pill mono" id="offlineBadge">0 API · Offline only · Demo data</div>
+    <div class="lang-switcher">
+      <button class="lang-btn mono active" data-lang="zh">中文</button>
+      <button class="lang-btn mono" data-lang="en">EN</button>
+      <button class="lang-btn mono" data-lang="de">DE</button>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div>
+    <div class="eyebrow mono" id="heroEyebrow"></div>
+    <h1 id="heroTitle"></h1>
+    <p class="hero-desc" id="heroDesc"></p>
+    <div class="hero-actions">
+      <button class="btn primary mono" id="jumpRoadmapBtn"></button>
+      <button class="btn mono" id="jumpSimulatorBtn"></button>
+    </div>
+    <p class="hero-hint" id="glossaryHint"></p>
+  </div>
+  <div class="hero-panel">
+    <div class="hero-panel-title mono" id="heroPanelTitle"></div>
+    <div class="hero-stat-grid">
+      <div class="hero-stat">
+        <strong id="heroStat1Value"></strong>
+        <span id="heroStat1Label"></span>
+      </div>
+      <div class="hero-stat">
+        <strong id="heroStat2Value"></strong>
+        <span id="heroStat2Label"></span>
+      </div>
+      <div class="hero-stat">
+        <strong id="heroStat3Value"></strong>
+        <span id="heroStat3Label"></span>
+      </div>
+      <div class="hero-stat">
+        <strong id="heroStat4Value"></strong>
+        <span id="heroStat4Label"></span>
+      </div>
+    </div>
+    <div class="focus-box">
+      <div class="card-label mono" id="focusTitle"></div>
+      <p id="focusDesc" style="color:var(--text-dim); font-size:0.88rem;"></p>
+      <div class="focus-tags" id="focusTags"></div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section id="roadmapSection">
+    <div class="section-label mono" id="roadmapLabel"></div>
+    <h2 id="roadmapTitle"></h2>
+    <p class="section-intro" id="roadmapIntro"></p>
+
+    <div class="roadmap">
+      <div class="roadmap-head">
+        <div class="pill mono" id="roadmapProgressText"></div>
+        <button class="mini-btn mono" id="resetProgressBtn" style="padding:0.45rem 0.7rem;"></button>
+      </div>
+      <div class="roadmap-track">
+        <div class="roadmap-fill" id="roadmapFill"></div>
+      </div>
+      <div class="course-tabs" id="courseTabs"></div>
+      <div id="coursePanels"></div>
+    </div>
+  </section>
+
+  <section id="mapSection">
+    <div class="section-label mono" id="mapLabel"></div>
+    <h2 id="mapTitle"></h2>
+    <p class="section-intro" id="mapIntro"></p>
+
+    <div class="scenario-grid" style="margin-bottom:1.2rem;">
+      <div class="scenario-card">
+        <div class="card-label mono" id="scenarioLabel"></div>
+        <div class="card-title" id="scenarioTitle"></div>
+        <p id="scenarioText" style="color:var(--text-dim);"></p>
+      </div>
+      <div class="scenario-card">
+        <div class="card-label mono" id="relationshipLabel"></div>
+        <div class="list" id="relationshipList"></div>
+      </div>
+    </div>
+
+    <div class="flow-container">
+      <div class="flow-row" id="flowRow"></div>
+    </div>
+    <div id="moduleDetails"></div>
+  </section>
+
+  <section id="dataSection">
+    <div class="section-label mono" id="dataLabel"></div>
+    <h2 id="dataTitle"></h2>
+    <p class="section-intro" id="dataIntro"></p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th id="thAction"></th>
+            <th id="thObject"></th>
+            <th id="thModules"></th>
+            <th id="thWhat"></th>
+          </tr>
+        </thead>
+        <tbody id="dataFlowBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="simulatorSection">
+    <div class="section-label mono" id="simLabel"></div>
+    <h2 id="simTitle"></h2>
+    <p class="section-intro" id="simIntro"></p>
+
+    <div class="simulator-wrap">
+      <div class="sim-head">
+        <div class="pill mono" id="simSafetyBadge"></div>
+        <div class="sim-tabs" id="simTabs"></div>
+      </div>
+
+      <div class="simulator-box">
+        <div class="sap-titlebar">
+          <span id="sapWindowTitle"></span>
+          <span class="mono">SAP GUI 770</span>
+        </div>
+        <div class="sap-toolbar">
+          <span id="sapToolbar1"></span>
+          <span id="sapToolbar2"></span>
+          <span id="sapToolbar3"></span>
+          <span id="sapToolbar4"></span>
+        </div>
+        <div class="sap-shell">
+          <aside class="sap-side">
+            <h3 id="sapNavTitle"></h3>
+            <div class="sap-tree" id="sapTree"></div>
+          </aside>
+          <div class="sap-main">
+            <div class="sap-command">
+              <label class="sap-label mono" for="simCommand" id="sapCommandLabel"></label>
+              <input class="sap-input mono" id="simCommand" readonly>
+              <button class="sap-run mono" id="runSimBtn"></button>
+            </div>
+            <div class="sap-info-grid">
+              <div class="sap-panel">
+                <h4 id="simGoalTitle"></h4>
+                <div id="simGoalText"></div>
+              </div>
+              <div class="sap-panel">
+                <h4 id="simHowTitle"></h4>
+                <div id="simHowText"></div>
+              </div>
+            </div>
+            <div class="sap-panel" style="margin-bottom:1rem;">
+              <h4 id="simFilterTitle"></h4>
+              <div class="sap-info-grid" id="simFilters"></div>
+            </div>
+            <div class="sap-table-wrap">
+              <table class="sap-table">
+                <thead id="simTableHead"></thead>
+                <tbody id="simTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="safe-grid">
+        <div class="safe-card">
+          <strong id="safeTitle1"></strong>
+          <p id="safeText1" style="color:var(--text-dim);"></p>
+        </div>
+        <div class="safe-card">
+          <strong id="safeTitle2"></strong>
+          <p id="safeText2" style="color:var(--text-dim);"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="caseSection">
+    <div class="section-label mono" id="caseLabel"></div>
+    <h2 id="caseTitle"></h2>
+    <p class="section-intro" id="caseIntro"></p>
+    <div class="case-grid" id="caseGrid"></div>
+  </section>
+
+  <section id="quizSection">
+    <div class="section-label mono" id="quizLabel"></div>
+    <h2 id="quizTitle"></h2>
+    <p class="section-intro" id="quizIntro"></p>
+    <div class="quiz-container">
+      <div class="quiz-head">
+        <div class="pill mono" id="quizProgressText"></div>
+        <div class="quiz-track" style="width:min(320px, 100%);">
+          <div class="quiz-fill" id="quizFill"></div>
+        </div>
+      </div>
+      <div id="quizBody"></div>
+      <div class="quiz-nav">
+        <button class="btn mono" id="quizPrevBtn"></button>
+        <button class="btn primary mono" id="quizNextBtn"></button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="glossary-card" id="glossaryCard">
+  <div class="glossary-card-head">
+    <div>
+      <div class="glossary-meta mono" id="glossaryMeta"></div>
+      <div class="glossary-title" id="glossaryTitle"></div>
+    </div>
+    <button class="glossary-close" id="glossaryCloseBtn">✕</button>
+  </div>
+  <div class="glossary-card-body">
+    <div class="glossary-copy" id="glossaryPlain"></div>
+    <div class="glossary-subtitle mono" id="glossaryWhyLabel"></div>
+    <div class="glossary-copy" id="glossaryWhy"></div>
+    <div class="glossary-animation" aria-hidden="true">
+      <span class="glossary-dot"></span>
+      <span class="glossary-dot"></span>
+      <span class="glossary-dot"></span>
+    </div>
+    <div class="glossary-subtitle mono" id="glossaryExampleLabel"></div>
+    <div class="glossary-copy" id="glossaryExample"></div>
+    <div class="glossary-actions" id="glossaryActions"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="mono" id="footerLeft"></div>
+  <div class="mono" id="footerRight"></div>
+</footer>
+
+<script>
+  const app = {
+    lang: localStorage.getItem('sapOfflineLang') || 'zh',
+    currentCourse: 0,
+    currentModule: 'mm',
+    currentSim: 'mmbe',
+    currentQuestion: 0,
+    answered: JSON.parse(localStorage.getItem('sapOfflineQuizState') || '[]'),
+    activeGlossaryId: null
+  };
+
+  const modules = [
+    { id: 'mm', color: 'mm' },
+    { id: 'scm', color: 'scm' },
+    { id: 'fi', color: 'fi' },
+    { id: 'cust', color: 'cust' }
+  ];
+
+  const simScreens = [
+    { id: 'mmbe', module: 'mm' },
+    { id: 'md04', module: 'scm' },
+    { id: 'fb03', module: 'fi' },
+    { id: 'bp', module: 'cust' }
+  ];
+
+  const i18n = {
+    zh: {
+      logo: 'SAP for FMCG · Offline Studio',
+      offlineBadge: '0 API · 离线运行 · 全部为演示数据',
+      heroEyebrow: 'Module 00+ / 从地图到操作',
+      heroTitle: '理解模块关系，同时<em>真的会查</em>',
+      heroDesc: '这个页面严格基于你原来的 UI 气质扩展成完整离线学习沙盘。你会在同一页里看懂 SAP S/4 基础模块之间的关系，重点掌握 MM、供应链、Finance 和 Customers 的业务逻辑、常用事务码、查询顺序，以及 SAP GUI 长什么样、怎么安全练习。',
+      heroPanelTitle: '学习目标 / Outcome',
+      heroStats: [
+        ['04', '核心模块重点突破'],
+        ['04', '离线 SAP GUI 模拟事务'],
+        ['08', '跨模块真实排查路径'],
+        ['100%', '本地演示，无公司数据']
+      ],
+      jumpRoadmap: 'Start Learning',
+      jumpSimulator: 'Open SAP GUI Demo',
+      glossaryHint: '页面里的关键名词现在都可以点开。点一下术语，就会弹出大白话解释、场景例子、SAP 官方搜索入口和 Copilot 提问入口。',
+      focusTitle: '我的关注点',
+      focusDesc: '把你不确定的词先收进这里，后面再集中学。',
+      glossaryMetaLabel: '即点即学',
+      glossaryWhyLabel: '为什么你要懂',
+      glossaryExampleLabel: '在工作里怎么出现',
+      glossaryActions: {
+        google: 'Google 一下',
+        sap: 'SAP 官方搜索',
+        copilot: '复制给 Copilot',
+        focus: '加入我的关注点',
+        copied: '已复制'
+      },
+      roadmapLabel: '01 — 学习路径',
+      roadmapTitle: '跟着节奏，从“知道模块”到“知道怎么查”',
+      roadmapIntro: '每个模块都不是单独存在的。建议按这里的顺序学：先知道它负责什么，再知道它留下什么数据，再进入 GUI 模拟看界面与筛选字段。',
+      roadmapProgress: (done, total) => `已完成 ${done} / ${total} 个学习模块`,
+      resetProgress: '重置进度',
+      roadmapTabs: ['Map', 'MM', 'Supply Chain', 'Finance', 'Customers'],
+      coursePanels: [
+        {
+          title: '先建立地图',
+          leftLabel: '你先记住什么',
+          leftList: [
+            'MM 负责物料、库存、采购、收发货。',
+            '供应链视角会把需求、补货、交付节奏串起来。',
+            'Finance 负责凭证、总账、应收应付和结果确认。',
+            'Customers 不是单一事务码，而是围绕客户主数据、订单、开票和回款。'
+          ],
+          rightLabel: '你最终会做到什么',
+          rightList: [
+            '看到库存异常时，知道先查库存还是先查订单。',
+            '看到利润异常时，知道先回到 FI 凭证而不是猜。',
+            '看到客户投诉时，知道主数据、订单、开票、AR 各在哪里。',
+            '知道哪些事务码适合“只查不动数据”。'
+          ]
+        },
+        {
+          title: 'MM：库存与物料的第一现场',
+          leftLabel: '高频理解',
+          leftList: [
+            'MMBE 看某个料在工厂/库存地点/批次的库存。',
+            'MB51 看物料凭证，适合追 GI/GR 的历史轨迹。',
+            'ME23N/ME2N 看采购单状态，帮助判断货为什么没进来。',
+            'MIGO 是过账入口，但本页面只模拟查看，不允许过账。'
+          ],
+          rightLabel: '操作顺序',
+          rightList: [
+            '先定物料和工厂。',
+            '再看 unrestricted / quality / blocked stock。',
+            '如果库存不对，再跳到凭证历史。',
+            '如果未来会缺货，再去需求视图看计划。'
+          ]
+        },
+        {
+          title: 'Supply Chain：需求、补货、交付节奏',
+          leftLabel: '高频理解',
+          leftList: [
+            '供应链不是只看库存，而是看库存够不够支撑未来需求。',
+            'MD04 是需求供给清单，能看到需求、采购、计划订单。',
+            'OTIF、lead time、safety stock 这些概念都能回到这里理解。',
+            '你做 FMCG 时，促销周和常规周的补货逻辑通常不一样。'
+          ],
+          rightLabel: '操作顺序',
+          rightList: [
+            '先看当前可用库存。',
+            '再看未来需求何时爆发。',
+            '再看补货单据是否已经创建或延迟。',
+            '最后判断缺口是预测问题、采购问题，还是执行问题。'
+          ]
+        },
+        {
+          title: 'Finance：结果为什么会变',
+          leftLabel: '高频理解',
+          leftList: [
+            'FB03 用来查看具体凭证，适合做来源追踪。',
+            'FBL5N 看客户行项目，应收、未清项、信用风险都在这里。',
+            'FBL1N 看供应商行项目，应付问题可以从这里追。',
+            'FS10N / FAGLL03 看总账余额和明细，适合解释 P&L/BS 变化。'
+          ],
+          rightLabel: '操作顺序',
+          rightList: [
+            '先确定异常是收入、成本还是回款。',
+            '再找对应的会计科目或凭证号。',
+            '再回溯到上游业务单据。',
+            '最终把“业务动作”翻译成“财务影响”。'
+          ]
+        },
+        {
+          title: 'Customers：客户主数据到回款闭环',
+          leftLabel: '高频理解',
+          leftList: [
+            '客户视角要同时看主数据、销售订单、交货、开票和 AR。',
+            'S/4 常用 BP 维护或查看 Business Partner。',
+            'VA03/VA05 看订单，VF03/VF05N 看开票，FBL5N 看回款状态。',
+            '很多所谓客户问题，根源其实是主数据、信用或价格条件。'
+          ],
+          rightLabel: '操作顺序',
+          rightList: [
+            '先确认客户编码和销售区域。',
+            '再看订单有没有被创建和释放。',
+            '再看是否发货、是否开票。',
+            '最后看 FI 是否挂出应收、是否清账。'
+          ]
+        }
+      ],
+      mapLabel: '02 — 模块关系',
+      mapTitle: '四个重点模块，一条完整业务链',
+      mapIntro: '点击模块卡片查看它负责什么、与谁发生关系、你该从哪里开始学。这里刻意把 SD/客户视角合并到 Customers，方便你从业务对象理解而不是背模块缩写。',
+      scenarioLabel: '场景 / Scenario',
+      scenarioTitle: '周一早上，库存、订单、利润和客户都来找你',
+      scenarioText: '华北 distributor 说上个月少收了 3000 箱，销售说订单已发，财务说收入已确认，客户团队又说 credit note 还没处理。真正的排查不会只停在一个模块，而是沿着业务动作跨模块追。',
+      relationshipLabel: '你要形成的关系感',
+      relationshipList: [
+        '库存不对：先看 MM，再看供应链供需，再核对交货。',
+        '缺货风险：先看供应链，再追采购或计划。',
+        '利润异常：先回 FI，再找上游 SD/MM 业务。',
+        '客户抱怨：先确认 BP/订单/开票/应收是否连起来。'
+      ],
+      flow: {
+        mm: ['MM', '物料与库存', '采购、库存、GR/GI 的原始现场'],
+        scm: ['Supply Chain', '供需与补货', '从库存延伸到需求、补货和交付节奏'],
+        fi: ['Finance', '凭证与结果', '收入、成本、AR/AP、总账的落点'],
+        cust: ['Customers', '客户与订单', '客户主数据、订单、开票、回款']
+      },
+      moduleDetails: {
+        mm: {
+          title: 'MM - Materials Management',
+          summary: '这是你看“货”的地方。真实公司里最常用的是查库存、查物料凭证、查采购单状态。',
+          leftTitle: '你会在这里做什么',
+          leftList: [
+            '查某个 SKU 当前库存与库存地点分布。',
+            '看最近一周是否发生过异常 GI/GR。',
+            '确认某个 PO 是否已经收货。',
+            '给供应链或销售提供库存依据。'
+          ],
+          rightTitle: '安全事务码',
+          tcodes: ['MMBE', 'MB51', 'ME23N', 'ME2N', 'MB52', 'MIGO(display mindset)'],
+          tags: ['MM', 'Inventory', 'GR/GI']
+        },
+        scm: {
+          title: 'Supply Chain - Planning & Fulfilment',
+          summary: '这是你看“未来够不够”的地方。它把库存、需求、采购、计划订单、发运节奏连成一张供需图。',
+          leftTitle: '你会在这里做什么',
+          leftList: [
+            '判断当前库存能撑到哪一天。',
+            '看未来需求是否被促销拉高。',
+            '判断补货单是否晚了、少了或根本没建。',
+            '和工厂、采购、物流同步缺口。'
+          ],
+          rightTitle: '安全事务码',
+          tcodes: ['MD04', 'MD07', 'ME5A', 'VL06O', 'CO09'],
+          tags: ['Supply', 'Demand', 'ATP']
+        },
+        fi: {
+          title: 'Finance - FI',
+          summary: '这是你把业务翻译成财务结果的地方。收入、成本、应收、库存差异，最后都要落到凭证和科目。',
+          leftTitle: '你会在这里做什么',
+          leftList: [
+            '追一张发票对应的 FI 凭证。',
+            '解释为什么 margin 下降。',
+            '查客户是否还有未清应收。',
+            '核对库存差异最终如何影响账。'
+          ],
+          rightTitle: '安全事务码',
+          tcodes: ['FB03', 'FBL5N', 'FBL1N', 'FS10N', 'FAGLL03'],
+          tags: ['FI', 'Document', 'AR/AP']
+        },
+        cust: {
+          title: 'Customers - BP / Order / Billing',
+          summary: '这是你看“客户到底发生了什么”的地方。客户不是一张表，而是一串主数据和业务单据。',
+          leftTitle: '你会在这里做什么',
+          leftList: [
+            '确认客户主数据是否完整、是否锁定。',
+            '看订单是否释放、是否交货。',
+            '看 billing 是否创建。',
+            '联动 FI 判断客户侧是否已形成应收或已清账。'
+          ],
+          rightTitle: '安全事务码',
+          tcodes: ['BP', 'VA03', 'VA05', 'VF03', 'VF05N', 'FBL5N'],
+          tags: ['Customer', 'Order', 'Billing']
+        }
+      },
+      dataLabel: '03 — 数据在哪里',
+      dataTitle: '同一件业务，在多个模块留下不同痕迹',
+      dataIntro: '真正提高效率的不是背定义，而是知道每个业务动作在系统里会留下什么对象。下面这张表可以当作“排查路线图”。',
+      tableHeaders: ['业务动作', '系统对象', '涉及模块', '你能回答的问题'],
+      dataRows: [
+        ['工厂收货', 'Goods Receipt / Material Document', ['mm', 'scm'], '货到了没、到哪个工厂、是否已经进可用库存'],
+        ['工厂发货给客户', 'Delivery + Goods Issue', ['cust', 'mm', 'fi'], '有没有发、库存有没有扣、成本有没有落账'],
+        ['客户下单', 'Sales Order', ['cust'], '客户要了什么、什么时候交、还差多少没交'],
+        ['促销前补货', 'Requirement + Planned Supply', ['scm', 'mm'], '促销周会不会缺货、补货单是否足够'],
+        ['开票并形成应收', 'Billing + FI Document', ['cust', 'fi'], '客户是否已被开票、应收是否已经挂账'],
+        ['月末库存差异', 'Inventory Difference Document', ['mm', 'fi'], '账实差多少、差异最终影响哪个科目'],
+        ['客户扣款/贷记', 'Credit Memo / Customer Line Item', ['cust', 'fi'], 'credit note 是否已开、是否已经冲掉应收'],
+        ['利润分析', 'GL / Margin View', ['fi', 'cust', 'mm'], '收入、成本、促销扣减分别来自哪里']
+      ],
+      simLabel: '04 — SAP GUI 模拟',
+      simTitle: '像真的一样看界面，但不会触发任何公司数据',
+      simIntro: '下面是完全本地渲染的 SAP S/4 GUI 风格训练界面。所有按钮、字段和表格都只读，数据全部写死在页面里，目的是让你把界面认熟、知道筛选项是什么意思。',
+      simSafetyBadge: 'SAFE MODE · display only · no posting · no API · no company privacy',
+      simTabs: ['MMBE Inventory', 'MD04 Supply', 'FB03 Finance', 'BP Customer'],
+      sapWindowTitle: 'SAP Easy Access - Training Sandbox',
+      sapToolbar: ['System', 'Favorites', 'Extras', 'Help'],
+      sapNavTitle: 'Navigation',
+      sapCommandLabel: 'Transaction',
+      runSim: 'Display',
+      simGoalTitle: 'What you learn here',
+      simHowTitle: 'How to read the screen',
+      simFilterTitle: 'Common filter fields',
+      safeTitle1: '为什么这个练习是安全的',
+      safeText1: '整个页面是单个 HTML 文件，所有数据写在本地脚本里，没有登录、没有接口调用、没有上传、没有写入公司系统。',
+      safeTitle2: '你可以怎么用它',
+      safeText2: '把它当成“认界面”和“练排查路径”的沙盘。先在这里熟悉字段，再去公司正式环境用 display-only 权限做同样的查询。',
+      sims: {
+        mmbe: {
+          tree: ['Logistics', 'Materials Management', 'Inventory Management', 'Stock Overview (MMBE)'],
+          goal: '学会从物料、工厂、库存地点三个维度读库存。',
+          how: '先确认物料编码和工厂，再看 unrestricted、quality inspection、blocked stock 是否分布异常。',
+          filters: [
+            ['Material', 'FG-CHOC-01'],
+            ['Plant', 'CN10'],
+            ['Storage Location', 'FG01'],
+            ['Batch', 'B240318']
+          ],
+          headers: ['Plant', 'SLoc', 'Material', 'Unrestricted', 'Quality', 'Blocked', 'Batch'],
+          rows: [
+            ['CN10', 'FG01', 'FG-CHOC-01', '12,400', '320', '0', 'B240318'],
+            ['CN10', 'RET1', 'FG-CHOC-01', '1,050', '0', '180', 'B240201'],
+            ['CN20', 'FG01', 'FG-CHOC-01', '8,600', '0', '0', 'B240315']
+          ]
+        },
+        md04: {
+          tree: ['Logistics', 'Production Planning', 'MRP', 'Stock/Requirements List (MD04)'],
+          goal: '学会把今天的库存和未来需求放在同一条时间线上看。',
+          how: '先看当前可用库存，再看销售需求日期，再看采购或计划订单是否能及时补上缺口。',
+          filters: [
+            ['Material', 'FG-CHOC-01'],
+            ['Plant', 'CN10'],
+            ['MRP Area', 'CN10-DC'],
+            ['Planning Horizon', '14 days']
+          ],
+          headers: ['Date', 'MRP Element', 'Element Data', 'Receipt', 'Issue', 'Available Qty'],
+          rows: [
+            ['2026-03-30', 'Stock', 'Opening stock', '12,400', '-', '12,400'],
+            ['2026-04-01', 'SalesOrd', 'SO 45009812', '-', '4,200', '8,200'],
+            ['2026-04-03', 'Deliv.', 'Promo shipment', '-', '5,000', '3,200'],
+            ['2026-04-04', 'PurReq', 'PR 100231', '6,000', '-', '9,200'],
+            ['2026-04-08', 'SalesOrd', 'Key account order', '-', '7,500', '1,700']
+          ]
+        },
+        fb03: {
+          tree: ['Accounting', 'Financial Accounting', 'General Ledger', 'Display Document (FB03)'],
+          goal: '学会从凭证看这笔业务到底如何影响收入、成本或应收。',
+          how: '先识别凭证日期和参考单据，再看借贷方向、科目、金额，最后把它翻译回业务动作。',
+          filters: [
+            ['Company Code', 'CN01'],
+            ['Document No.', '1900004821'],
+            ['Fiscal Year', '2026'],
+            ['Document Type', 'RV']
+          ],
+          headers: ['GL Account', 'Description', 'Debit', 'Credit', 'Cost Center', 'Reference'],
+          rows: [
+            ['113100', 'Accounts Receivable', '24,500.00', '-', 'N/A', 'Billing 90014582'],
+            ['600100', 'Domestic Sales Revenue', '-', '21,681.42', 'N/A', 'Sales order 45009812'],
+            ['222100', 'Output Tax', '-', '2,818.58', 'N/A', 'Tax line']
+          ]
+        },
+        bp: {
+          tree: ['Cross-Application', 'SAP Business Partner', 'Master Data', 'Display BP'],
+          goal: '学会从客户主数据判断订单、开票、回款链条能否顺利运行。',
+          how: '先确认 BP 状态和角色，再看销售区域、付款条件、信用和地址信息是否完整。',
+          filters: [
+            ['Business Partner', 'BP-CN-RETL-028'],
+            ['Role', 'Customer'],
+            ['Sales Org', 'CN10'],
+            ['Distribution Channel', 'Modern Trade']
+          ],
+          headers: ['Field', 'Value', 'Meaning', 'Risk Signal'],
+          rows: [
+            ['Name', 'North Retail Group', 'Key account customer', 'Low'],
+            ['Payment Terms', 'N45', '45 days payment', 'Medium'],
+            ['Credit Status', 'Released', 'Orders can proceed', 'Low'],
+            ['Incompletion Log', 'Address missing tax contact', 'May block invoicing in some cases', 'Medium']
+          ]
+        }
+      },
+      caseLabel: '05 — 跨模块排查',
+      caseTitle: '遇到真实问题时，你应该怎么走',
+      caseIntro: '下面这 8 步按真实工作节奏设计。你可以把它当成排查 SOP，而不是死记事务码。',
+      caseCards: [
+        ['1', '先界定问题对象', '是库存差异、客户少收货、缺货风险，还是利润异常？对象不同，入口不同。'],
+        ['2', '确认主键', '至少先拿到 SKU、工厂、客户、订单号、发票号中的两个。没有主键，任何模块都查不准。'],
+        ['3', '回到 MM 看实货', '先确认账面库存、批次、库存地点是否合理。'],
+        ['4', '回到 Supply 看未来', '如果不是历史差异而是即将断货，必须切到 MD04 这种供需视图。'],
+        ['5', '回到 Customer 看订单交付', '客户说没收到，不代表没发；销售说发了，也不代表开票或回款链条没问题。'],
+        ['6', '回到 Finance 看落账', '最终要解释业务影响，就必须落到 FB03 / FBL5N / GL 明细。'],
+        ['7', '找断点而不是找人背锅', '问题通常出现在接口：库存到交货、开票到应收、主数据到订单。'],
+        ['8', '形成一句话结论', '例如：库存本身没问题，缺口来自 4 月 3 日促销订单提前发货，而补货 PR 延后。']
+      ],
+      quizLabel: '06 — 练习',
+      quizTitle: '你现在应该能判断先去哪一个模块',
+      quizIntro: '每题都不是在考定义，而是在考“下一步怎么走”。',
+      quizPrev: '上一题',
+      quizNext: '下一题',
+      quizDone: '完成',
+      quizProgress: (n, total) => `题目 ${n} / ${total}`,
+      questions: [
+        {
+          q: '客户说 3 月 28 日那票货没有收到，但销售说系统里已经发了。你第一轮应该怎么查？',
+          context: '你的目标是同时确认发货动作和库存动作，而不是只听某一方描述。',
+          options: [
+            '只看 FB03，因为发货一定先去财务。',
+            '先看 Customer/Delivery，再用 MM 验证 Goods Issue。',
+            '只看 BP 主数据，因为客户问题都从主数据开始。',
+            '直接让物流团队重发。'
+          ],
+          correct: 1,
+          correctText: '对。先从交货和订单视角确认是否真的创建并过账了交货，再回 MM 验证 GI 是否真实扣减库存，这样可以把“已发货”和“系统说已发货”区分开。',
+          wrongText: '这还不够完整。客户未收到货时，最关键的是先确认交货单和 GI 是否真实发生，再决定要不要往 FI 或主数据层继续追。'
+        },
+        {
+          q: '你看到某个 SKU 下周会断货，但今天库存还很健康。最该先开什么事务码？',
+          context: '这类问题不是库存静态值，而是未来供需平衡问题。',
+          options: [
+            'MMBE',
+            'FB03',
+            'MD04',
+            'BP'
+          ],
+          correct: 2,
+          correctText: '对。MD04 能把未来需求与补货放到同一条时间线上，是判断“现在没问题、下周会有问题”的最直接入口。',
+          wrongText: '这里只看当前库存不够。问题在未来供需节奏，所以应该先去 MD04 这类供需视图。'
+        },
+        {
+          q: '财务说本月某大客户毛利偏低，你最应该先从哪里打开？',
+          context: '毛利异常先看落账，再追上游业务。',
+          options: [
+            'FB03 或 GL 明细',
+            '只看 MMBE',
+            '只看 BP',
+            '先去问销售'
+          ],
+          correct: 0,
+          correctText: '对。毛利异常的第一站通常是 FI，因为最终收入、成本、税和扣减都在凭证或总账里落地。看清会计结果后，再回订单和库存找原因。',
+          wrongText: '毛利本质是财务结果，不应该一开始就停留在库存或客户主数据层。先从 FI 找到异常行，再回上游排查更快。'
+        },
+        {
+          q: '客户团队说订单、发货都正常，但发票迟迟没出去。哪个对象最值得优先确认？',
+          context: '这是客户闭环里常见的接口问题。',
+          options: [
+            '是否存在 billing document，以及主数据是否不完整',
+            '是否有更多安全库存',
+            '是否有新的采购申请',
+            '是否重启电脑'
+          ],
+          correct: 0,
+          correctText: '对。开票问题首先要确认 billing document 是否创建，以及客户主数据或定价、税务字段是否导致开票被卡住。',
+          wrongText: '发票没出去通常是 billing 或主数据完整性问题，不是库存或采购优先级最高。'
+        }
+      ],
+      footerLeft: 'SAP for FMCG · Offline Learning Studio · Demo only',
+      footerRight: 'No API · No login · No company privacy involved'
+    },
+    en: {
+      logo: 'SAP for FMCG · Offline Studio',
+      offlineBadge: '0 API · Offline only · Demo data only',
+      heroEyebrow: 'Module 00+ / from map to operation',
+      heroTitle: 'Understand the modules and actually <em>know where to look</em>',
+      heroDesc: 'This page extends your original UI into a full offline learning sandbox. In one screen you can understand the core SAP S/4 module relationships and build practical working knowledge for MM, supply chain, finance, and customer-related flows, including a safe SAP GUI style simulator.',
+      heroPanelTitle: 'Learning outcome',
+      heroStats: [
+        ['04', 'Core modules in focus'],
+        ['04', 'Offline SAP GUI simulations'],
+        ['08', 'Cross-module troubleshooting steps'],
+        ['100%', 'Local demo, no company data']
+      ],
+      jumpRoadmap: 'Start Learning',
+      jumpSimulator: 'Open SAP GUI Demo',
+      glossaryHint: 'Key terms on the page are now clickable. Click any term to open a plain-language explanation, a work example, an SAP-help search route, and a Copilot prompt handoff.',
+      focusTitle: 'My Focus Queue',
+      focusDesc: 'Save the terms you are unsure about and learn them in your own order.',
+      glossaryMetaLabel: 'Click to learn',
+      glossaryWhyLabel: 'Why it matters',
+      glossaryExampleLabel: 'How it appears at work',
+      glossaryActions: {
+        google: 'Search Google',
+        sap: 'Search SAP Help',
+        copilot: 'Copy for Copilot',
+        focus: 'Add to focus',
+        copied: 'Copied'
+      },
+      roadmapLabel: '01 - Learning Path',
+      roadmapTitle: 'Move from module awareness to operational judgment',
+      roadmapIntro: 'Do not learn the modules as isolated boxes. Learn what each one owns, what data it leaves behind, and how to read the SAP GUI screen safely before you touch a live system.',
+      roadmapProgress: (done, total) => `${done} / ${total} learning modules completed`,
+      resetProgress: 'Reset progress',
+      roadmapTabs: ['Map', 'MM', 'Supply Chain', 'Finance', 'Customers'],
+      coursePanels: [
+        {
+          title: 'Build the map first',
+          leftLabel: 'What to remember',
+          leftList: [
+            'MM owns materials, inventory, procurement, and goods movements.',
+            'Supply chain connects stock to demand, replenishment, and fulfilment timing.',
+            'Finance owns accounting documents, GL, AR/AP, and the business result.',
+            'Customers is best understood as customer master, order, billing, and receivables together.'
+          ],
+          rightLabel: 'What you will be able to do',
+          rightList: [
+            'Choose the right starting point when inventory looks wrong.',
+            'Go to FI first when margin looks wrong.',
+            'Handle customer complaints through BP, order, billing, and AR as one chain.',
+            'Recognize safe display-oriented transactions.'
+          ]
+        },
+        {
+          title: 'MM: the first place where the physical product appears',
+          leftLabel: 'Core understanding',
+          leftList: [
+            'MMBE shows stock by material, plant, storage location, and batch.',
+            'MB51 shows material document history for GI and GR tracing.',
+            'ME23N and ME2N help explain why stock has not arrived yet.',
+            'MIGO is a posting tool in real life, so here it is discussed only from a display mindset.'
+          ],
+          rightLabel: 'How to work',
+          rightList: [
+            'Start with material and plant.',
+            'Read unrestricted, quality, and blocked stock separately.',
+            'If stock looks wrong, move to document history.',
+            'If future shortage is the risk, shift to supply-demand view.'
+          ]
+        },
+        {
+          title: 'Supply Chain: demand, replenishment, and timing',
+          leftLabel: 'Core understanding',
+          leftList: [
+            'Supply chain is about whether today’s stock can support tomorrow’s demand.',
+            'MD04 puts demand, purchase supply, and planned supply on one timeline.',
+            'OTIF, lead time, and safety stock become much clearer from this view.',
+            'Promo weeks and base weeks usually require different replenishment logic.'
+          ],
+          rightLabel: 'How to work',
+          rightList: [
+            'Read current available stock.',
+            'Read when demand spikes.',
+            'Read whether replenishment exists and arrives on time.',
+            'Then decide whether the gap is planning, procurement, or execution.'
+          ]
+        },
+        {
+          title: 'Finance: why the result changed',
+          leftLabel: 'Core understanding',
+          leftList: [
+            'FB03 is for document-level tracing.',
+            'FBL5N is for customer line items and receivables.',
+            'FBL1N is for vendor line items and payables.',
+            'FS10N and FAGLL03 explain balance and movement in GL.'
+          ],
+          rightLabel: 'How to work',
+          rightList: [
+            'Identify whether the problem is revenue, cost, or cash collection.',
+            'Find the account or document first.',
+            'Trace back to upstream business documents.',
+            'Translate a business event into a financial impact.'
+          ]
+        },
+        {
+          title: 'Customers: from master data to cash collection',
+          leftLabel: 'Core understanding',
+          leftList: [
+            'Customer work spans BP, order, delivery, billing, and receivables.',
+            'In S/4, BP is a common starting point for business partner data.',
+            'VA03 or VA05 read orders, VF03 or VF05N read billing, and FBL5N reads receivables.',
+            'Many customer issues are really master data, credit, or pricing issues.'
+          ],
+          rightLabel: 'How to work',
+          rightList: [
+            'Confirm customer code and sales area.',
+            'Check whether the order was created and released.',
+            'Check whether delivery and billing happened.',
+            'Confirm whether FI posted and cleared the receivable.'
+          ]
+        }
+      ],
+      mapLabel: '02 - Module Relationships',
+      mapTitle: 'Four focus areas connected by one business chain',
+      mapIntro: 'Click any module card to see what it owns, how it connects to the others, and where you should start learning it. The customer view intentionally bundles classic SD-type activity around the business object.',
+      scenarioLabel: 'Scenario',
+      scenarioTitle: 'On Monday morning, inventory, orders, profit, and customer issues arrive together',
+      scenarioText: 'A distributor says 3,000 cases were missing, sales says the order shipped, finance says revenue is posted, and the customer team says the credit note is still open. Real troubleshooting starts by moving across modules, not by staying in one.',
+      relationshipLabel: 'Relationship awareness to build',
+      relationshipList: [
+        'Wrong stock: start in MM, then validate supply and delivery.',
+        'Shortage risk: start in supply chain, then chase planning or procurement.',
+        'Margin issue: start in FI, then trace to upstream MM or customer documents.',
+        'Customer complaint: connect BP, order, billing, and receivables.'
+      ],
+      flow: {
+        mm: ['MM', 'Material & Inventory', 'The original site of procurement, stock, and goods movement'],
+        scm: ['Supply Chain', 'Demand & Replenishment', 'Connects inventory to requirements and fulfilment timing'],
+        fi: ['Finance', 'Documents & Results', 'Where revenue, cost, AR/AP, and GL finally land'],
+        cust: ['Customers', 'BP, Order & Billing', 'Customer master, order, invoice, and collection']
+      },
+      moduleDetails: {
+        mm: {
+          title: 'MM - Materials Management',
+          summary: 'This is where you look at the product itself. In real work it is the most common entry point for stock, material documents, and PO status.',
+          leftTitle: 'Typical tasks',
+          leftList: [
+            'Check current stock by SKU and storage location.',
+            'Trace abnormal GI or GR in recent days.',
+            'Confirm whether a PO has been received.',
+            'Provide factual stock visibility to supply chain or sales.'
+          ],
+          rightTitle: 'Safe transactions',
+          tcodes: ['MMBE', 'MB51', 'ME23N', 'ME2N', 'MB52', 'MIGO(display mindset)'],
+          tags: ['MM', 'Inventory', 'GR/GI']
+        },
+        scm: {
+          title: 'Supply Chain - Planning & Fulfilment',
+          summary: 'This is where you ask whether the future is covered. It links current stock to demand, purchase, planning, and shipment timing.',
+          leftTitle: 'Typical tasks',
+          leftList: [
+            'Estimate how long current stock will last.',
+            'See whether promo demand is creating a future spike.',
+            'Check whether replenishment exists or is delayed.',
+            'Align factory, procurement, and logistics on the gap.'
+          ],
+          rightTitle: 'Safe transactions',
+          tcodes: ['MD04', 'MD07', 'ME5A', 'VL06O', 'CO09'],
+          tags: ['Supply', 'Demand', 'ATP']
+        },
+        fi: {
+          title: 'Finance - FI',
+          summary: 'This is where you turn business movement into financial explanation. Revenue, cost, receivables, and inventory difference all end in documents and accounts.',
+          leftTitle: 'Typical tasks',
+          leftList: [
+            'Trace a billing document into FI.',
+            'Explain why margin declined.',
+            'Check whether customer AR is still open.',
+            'See how inventory differences hit the books.'
+          ],
+          rightTitle: 'Safe transactions',
+          tcodes: ['FB03', 'FBL5N', 'FBL1N', 'FS10N', 'FAGLL03'],
+          tags: ['FI', 'Document', 'AR/AP']
+        },
+        cust: {
+          title: 'Customers - BP / Order / Billing',
+          summary: 'This is where you ask what really happened to the customer. A customer is not one table but a chain of master data and business documents.',
+          leftTitle: 'Typical tasks',
+          leftList: [
+            'Confirm whether customer master data is complete or blocked.',
+            'Read whether the order was released and delivered.',
+            'Check whether billing was created.',
+            'Connect the customer case to FI posting and clearing.'
+          ],
+          rightTitle: 'Safe transactions',
+          tcodes: ['BP', 'VA03', 'VA05', 'VF03', 'VF05N', 'FBL5N'],
+          tags: ['Customer', 'Order', 'Billing']
+        }
+      },
+      dataLabel: '03 - Where the Data Lives',
+      dataTitle: 'The same business event leaves different footprints',
+      dataIntro: 'You get faster when you stop memorizing definitions and start recognizing the object created by each business action. Use this as a troubleshooting map.',
+      tableHeaders: ['Business action', 'System object', 'Modules', 'Questions you can answer'],
+      dataRows: [
+        ['Factory receipt', 'Goods Receipt / Material Document', ['mm', 'scm'], 'Did the goods arrive, where did they land, and are they usable stock already'],
+        ['Factory ships to customer', 'Delivery + Goods Issue', ['cust', 'mm', 'fi'], 'Was it shipped, was stock reduced, and did cost hit FI'],
+        ['Customer places an order', 'Sales Order', ['cust'], 'What did the customer ask for, when, and how much is still open'],
+        ['Promo replenishment', 'Requirement + Planned Supply', ['scm', 'mm'], 'Will promo demand cause shortage and is supply sufficient'],
+        ['Billing creates receivable', 'Billing + FI Document', ['cust', 'fi'], 'Was the customer invoiced and did AR post'],
+        ['Month-end stock difference', 'Inventory Difference Document', ['mm', 'fi'], 'How large is the gap and which account is affected'],
+        ['Customer deduction or credit memo', 'Credit Memo / Customer Line Item', ['cust', 'fi'], 'Was the credit memo created and did AR get offset'],
+        ['Margin analysis', 'GL / Margin View', ['fi', 'cust', 'mm'], 'Where do revenue, cost, and trade spend come from']
+      ],
+      simLabel: '04 - SAP GUI Simulator',
+      simTitle: 'A realistic SAP GUI style screen with zero company impact',
+      simIntro: 'The interface below is rendered entirely inside this HTML file. All buttons are read-only and every table uses hard-coded demo values, so you can learn the screen layout and field meaning without touching any productive data.',
+      simSafetyBadge: 'SAFE MODE · display only · no posting · no API · no company privacy',
+      simTabs: ['MMBE Inventory', 'MD04 Supply', 'FB03 Finance', 'BP Customer'],
+      sapWindowTitle: 'SAP Easy Access - Training Sandbox',
+      sapToolbar: ['System', 'Favorites', 'Extras', 'Help'],
+      sapNavTitle: 'Navigation',
+      sapCommandLabel: 'Transaction',
+      runSim: 'Display',
+      simGoalTitle: 'What you learn here',
+      simHowTitle: 'How to read the screen',
+      simFilterTitle: 'Common filter fields',
+      safeTitle1: 'Why this practice is safe',
+      safeText1: 'This is a single local HTML file. No login, no connector, no upload, no write-back, and no call into any company system.',
+      safeTitle2: 'How to use it well',
+      safeText2: 'Use it to memorize screens and troubleshoot paths. Once the screen feels familiar, repeat the same logic in your company environment with display-only authorization.',
+      sims: {
+        mmbe: {
+          tree: ['Logistics', 'Materials Management', 'Inventory Management', 'Stock Overview (MMBE)'],
+          goal: 'Learn to read stock by material, plant, storage location, and batch.',
+          how: 'Confirm material and plant first, then separate unrestricted, quality, and blocked stock before drawing conclusions.',
+          filters: [
+            ['Material', 'FG-CHOC-01'],
+            ['Plant', 'CN10'],
+            ['Storage Location', 'FG01'],
+            ['Batch', 'B240318']
+          ],
+          headers: ['Plant', 'SLoc', 'Material', 'Unrestricted', 'Quality', 'Blocked', 'Batch'],
+          rows: [
+            ['CN10', 'FG01', 'FG-CHOC-01', '12,400', '320', '0', 'B240318'],
+            ['CN10', 'RET1', 'FG-CHOC-01', '1,050', '0', '180', 'B240201'],
+            ['CN20', 'FG01', 'FG-CHOC-01', '8,600', '0', '0', 'B240315']
+          ]
+        },
+        md04: {
+          tree: ['Logistics', 'Production Planning', 'MRP', 'Stock/Requirements List (MD04)'],
+          goal: 'Learn to put today’s stock and future demand on the same timeline.',
+          how: 'Read opening stock first, then demand dates, then replenishment dates, and only then decide whether the shortage is real.',
+          filters: [
+            ['Material', 'FG-CHOC-01'],
+            ['Plant', 'CN10'],
+            ['MRP Area', 'CN10-DC'],
+            ['Planning Horizon', '14 days']
+          ],
+          headers: ['Date', 'MRP Element', 'Element Data', 'Receipt', 'Issue', 'Available Qty'],
+          rows: [
+            ['2026-03-30', 'Stock', 'Opening stock', '12,400', '-', '12,400'],
+            ['2026-04-01', 'SalesOrd', 'SO 45009812', '-', '4,200', '8,200'],
+            ['2026-04-03', 'Deliv.', 'Promo shipment', '-', '5,000', '3,200'],
+            ['2026-04-04', 'PurReq', 'PR 100231', '6,000', '-', '9,200'],
+            ['2026-04-08', 'SalesOrd', 'Key account order', '-', '7,500', '1,700']
+          ]
+        },
+        fb03: {
+          tree: ['Accounting', 'Financial Accounting', 'General Ledger', 'Display Document (FB03)'],
+          goal: 'Learn to interpret how one business event hits revenue, tax, cost, or receivables.',
+          how: 'Start with document date and reference, then read debit and credit lines, then convert the accounting pattern back into the business event.',
+          filters: [
+            ['Company Code', 'CN01'],
+            ['Document No.', '1900004821'],
+            ['Fiscal Year', '2026'],
+            ['Document Type', 'RV']
+          ],
+          headers: ['GL Account', 'Description', 'Debit', 'Credit', 'Cost Center', 'Reference'],
+          rows: [
+            ['113100', 'Accounts Receivable', '24,500.00', '-', 'N/A', 'Billing 90014582'],
+            ['600100', 'Domestic Sales Revenue', '-', '21,681.42', 'N/A', 'Sales order 45009812'],
+            ['222100', 'Output Tax', '-', '2,818.58', 'N/A', 'Tax line']
+          ]
+        },
+        bp: {
+          tree: ['Cross-Application', 'SAP Business Partner', 'Master Data', 'Display BP'],
+          goal: 'Learn which customer master fields can influence the order-to-cash chain.',
+          how: 'Check BP status and role first, then sales area, payment terms, credit, and missing-field indicators.',
+          filters: [
+            ['Business Partner', 'BP-CN-RETL-028'],
+            ['Role', 'Customer'],
+            ['Sales Org', 'CN10'],
+            ['Distribution Channel', 'Modern Trade']
+          ],
+          headers: ['Field', 'Value', 'Meaning', 'Risk Signal'],
+          rows: [
+            ['Name', 'North Retail Group', 'Key account customer', 'Low'],
+            ['Payment Terms', 'N45', '45 days payment', 'Medium'],
+            ['Credit Status', 'Released', 'Orders can proceed', 'Low'],
+            ['Incompletion Log', 'Address missing tax contact', 'May block invoicing in some cases', 'Medium']
+          ]
+        }
+      },
+      caseLabel: '05 - Cross-Module Troubleshooting',
+      caseTitle: 'When a real issue happens, this is the route to follow',
+      caseIntro: 'These 8 steps are designed as a practical SOP. Learn the sequence, not just the transaction codes.',
+      caseCards: [
+        ['1', 'Define the object', 'Is it a stock gap, customer short receipt, shortage risk, or margin issue? Different objects require different entry points.'],
+        ['2', 'Capture the keys', 'Get at least two of these: SKU, plant, customer, order number, invoice number. Without keys, every module becomes noisy.'],
+        ['3', 'Go to MM for physical truth', 'Validate book stock, batch, and storage location before arguing about anything else.'],
+        ['4', 'Go to supply view for future risk', 'If the issue is an upcoming shortage, move to a demand-supply view such as MD04.'],
+        ['5', 'Go to customer view for order and delivery', 'Customer says not received does not mean not shipped, and sales saying shipped does not mean the full downstream chain is complete.'],
+        ['6', 'Go to Finance for the final impact', 'To explain business impact, you eventually need FB03, FBL5N, or GL detail.'],
+        ['7', 'Look for the broken handoff', 'Problems usually happen at interfaces: stock to delivery, billing to AR, or master data to order.'],
+        ['8', 'Write a one-sentence conclusion', 'Example: stock itself is fine; the gap comes from early promo shipment on April 3 while replenishment PR was delayed.']
+      ],
+      quizLabel: '06 - Practice',
+      quizTitle: 'You should now know which module to open first',
+      quizIntro: 'These questions test the next action, not a textbook definition.',
+      quizPrev: 'Previous',
+      quizNext: 'Next',
+      quizDone: 'Done',
+      quizProgress: (n, total) => `Question ${n} / ${total}`,
+      questions: [
+        {
+          q: 'A customer says a shipment on March 28 never arrived, but sales says it was shipped. What is your best first move?',
+          context: 'You want to validate the delivery event and the stock movement, not just accept one team’s narrative.',
+          options: [
+            'Check only FB03 because shipping always starts in Finance.',
+            'Check delivery from the customer side, then validate Goods Issue in MM.',
+            'Check only BP because customer issues always start in master data.',
+            'Ask logistics to resend immediately.'
+          ],
+          correct: 1,
+          correctText: 'Correct. Confirm delivery creation and posting first, then validate whether GI really reduced stock in MM. That separates a true shipment from a system claim of shipment.',
+          wrongText: 'Not quite. For a non-received shipment, start with delivery and GI validation before jumping to FI or master data.'
+        },
+        {
+          q: 'A SKU will run out next week, even though today’s stock looks healthy. Which transaction should you open first?',
+          context: 'This is a future supply-demand balance issue, not a static inventory issue.',
+          options: [
+            'MMBE',
+            'FB03',
+            'MD04',
+            'BP'
+          ],
+          correct: 2,
+          correctText: 'Correct. MD04 puts future demand and replenishment on the same timeline, which is exactly what you need for an upcoming shortage.',
+          wrongText: 'Static inventory alone is not enough here. The risk sits in the future timeline, so MD04 is the better first screen.'
+        },
+        {
+          q: 'Finance says margin for a major customer is too low this month. Where should you start?',
+          context: 'Margin issues should be anchored in the posted result before you trace upstream.',
+          options: [
+            'FB03 or GL detail',
+            'Only MMBE',
+            'Only BP',
+            'Ask sales first'
+          ],
+          correct: 0,
+          correctText: 'Correct. Margin is a financial outcome, so start from FI documents or GL movement, then work backward into order and inventory context.',
+          wrongText: 'The financial result needs a financial entry point first. Inventory or customer master may matter later, but not as the first stop.'
+        },
+        {
+          q: 'The customer team says order and delivery look normal, but the invoice has not gone out. What deserves priority?',
+          context: 'This is a classic order-to-cash handoff issue.',
+          options: [
+            'Whether the billing document exists and whether master data is incomplete',
+            'Whether more safety stock is available',
+            'Whether a new purchase requisition exists',
+            'Whether the computer needs a restart'
+          ],
+          correct: 0,
+          correctText: 'Correct. Missing billing often points to a billing object issue or incomplete customer/master/pricing/tax data.',
+          wrongText: 'The first suspicion should be the billing object and data completeness, not stock or procurement.'
+        }
+      ],
+      footerLeft: 'SAP for FMCG · Offline Learning Studio · Demo only',
+      footerRight: 'No API · No login · No company privacy involved'
+    },
+    de: {
+      logo: 'SAP fur FMCG · Offline Studio',
+      offlineBadge: '0 API · Offline nutzbar · Nur Demo-Daten',
+      heroEyebrow: 'Modul 00+ / von der Karte zur Bedienung',
+      heroTitle: 'Module verstehen und <em>wirklich wissen, wo man nachschaut</em>',
+      heroDesc: 'Diese Seite erweitert dein ursprungliches UI zu einer vollstandigen Offline-Lernumgebung. Du verstehst die Beziehungen der zentralen SAP S/4 Module und baust praxisnahes Verstandnis fur MM, Supply Chain, Finance und Customer-Flows auf, inklusive sicherem SAP-GUI-Stil-Simulator.',
+      heroPanelTitle: 'Lernziel',
+      heroStats: [
+        ['04', 'Kernmodule im Fokus'],
+        ['04', 'Offline SAP GUI Simulationen'],
+        ['08', 'Cross-Module Troubleshooting Schritte'],
+        ['100%', 'Lokal, keine Firmendaten']
+      ],
+      jumpRoadmap: 'Lernen starten',
+      jumpSimulator: 'SAP GUI Demo offnen',
+      glossaryHint: 'Wichtige Begriffe auf der Seite sind jetzt anklickbar. Ein Klick offnet eine einfache Erklarung, ein Arbeitsbeispiel, einen SAP-Hilfe-Suchweg und einen Copilot-Prompt.',
+      focusTitle: 'Meine Lernfokusse',
+      focusDesc: 'Speichere unklare Begriffe zuerst hier und lerne sie danach gesammelt.',
+      glossaryMetaLabel: 'Klick zum Lernen',
+      glossaryWhyLabel: 'Warum das wichtig ist',
+      glossaryExampleLabel: 'Wie es im Alltag auftaucht',
+      glossaryActions: {
+        google: 'Google-Suche',
+        sap: 'SAP-Hilfe Suche',
+        copilot: 'Fur Copilot kopieren',
+        focus: 'Zum Fokus hinzufugen',
+        copied: 'Kopiert'
+      },
+      roadmapLabel: '01 - Lernpfad',
+      roadmapTitle: 'Von Modulwissen zu operativer Entscheidung',
+      roadmapIntro: 'Lerne die Module nicht als isolierte Boxen. Lerne, was jedes Modul besitzt, welche Daten es hinterlasst und wie du einen SAP-GUI-Bildschirm sicher liest, bevor du in ein echtes System gehst.',
+      roadmapProgress: (done, total) => `${done} / ${total} Lernmodule abgeschlossen`,
+      resetProgress: 'Fortschritt zurucksetzen',
+      roadmapTabs: ['Map', 'MM', 'Supply Chain', 'Finance', 'Customers'],
+      coursePanels: [
+        {
+          title: 'Zuerst die Karte bauen',
+          leftLabel: 'Was du dir merken solltest',
+          leftList: [
+            'MM verantwortet Material, Bestand, Beschaffung und Warenbewegung.',
+            'Supply Chain verbindet Bestand mit Bedarf, Nachschub und Liefertakt.',
+            'Finance verantwortet Buchungsbelege, Hauptbuch, Debitoren und Kreditoren.',
+            'Customers versteht man am besten als Kette aus Stammdaten, Auftrag, Faktura und Forderung.'
+          ],
+          rightLabel: 'Was du danach kannst',
+          rightList: [
+            'Den richtigen Startpunkt wahlen, wenn Bestand falsch aussieht.',
+            'Bei Margin-Problemen zuerst in FI einsteigen.',
+            'Kundenprobleme uber BP, Auftrag, Faktura und AR als eine Kette lesen.',
+            'Sichere Anzeige-Transaktionen erkennen.'
+          ]
+        },
+        {
+          title: 'MM: der erste Ort der physischen Ware',
+          leftLabel: 'Kernverstandnis',
+          leftList: [
+            'MMBE zeigt Bestand nach Material, Werk, Lagerort und Charge.',
+            'MB51 zeigt Materialbelege fur GI- und GR-Nachverfolgung.',
+            'ME23N und ME2N helfen zu erklaren, warum Bestand noch nicht angekommen ist.',
+            'MIGO ist im echten Leben ein Buchungswerkzeug und wird hier nur konzeptionell betrachtet.'
+          ],
+          rightLabel: 'Arbeitslogik',
+          rightList: [
+            'Mit Material und Werk starten.',
+            'Unrestricted, Quality und Blocked getrennt lesen.',
+            'Wenn Bestand falsch aussieht, in die Beleg-Historie gehen.',
+            'Wenn ein Zukunftsrisiko vorliegt, zur Supply-Demand-Sicht wechseln.'
+          ]
+        },
+        {
+          title: 'Supply Chain: Bedarf, Nachschub und Timing',
+          leftLabel: 'Kernverstandnis',
+          leftList: [
+            'Supply Chain beantwortet, ob heutiger Bestand fur morgigen Bedarf reicht.',
+            'MD04 legt Bedarf, Einkauf und geplante Versorgung auf eine Zeitachse.',
+            'OTIF, Lead Time und Safety Stock werden aus dieser Sicht klarer.',
+            'Promo-Wochen und Basis-Wochen brauchen meist unterschiedliche Nachschublogik.'
+          ],
+          rightLabel: 'Arbeitslogik',
+          rightList: [
+            'Verfugbaren Bestand lesen.',
+            'Nachfrage-Spitzen erkennen.',
+            'Prufen, ob Nachschub existiert und rechtzeitig kommt.',
+            'Dann entscheiden, ob das Problem Planung, Einkauf oder Ausfuhrung ist.'
+          ]
+        },
+        {
+          title: 'Finance: warum sich das Ergebnis verandert',
+          leftLabel: 'Kernverstandnis',
+          leftList: [
+            'FB03 ist fur Beleg-Nachverfolgung auf Einzelbelegebene.',
+            'FBL5N ist fur Debitorenposten.',
+            'FBL1N ist fur Kreditorenposten.',
+            'FS10N und FAGLL03 erklaren Salden und Bewegungen im Hauptbuch.'
+          ],
+          rightLabel: 'Arbeitslogik',
+          rightList: [
+            'Zuerst unterscheiden: Umsatz, Kosten oder Zahlungseingang.',
+            'Dann Konto oder Beleg finden.',
+            'Dann zu den vorgelagerten Business-Dokumenten zuruckgehen.',
+            'Ein Geschaftsereignis in eine finanzielle Auswirkung ubersetzen.'
+          ]
+        },
+        {
+          title: 'Customers: von Stammdaten bis Zahlung',
+          leftLabel: 'Kernverstandnis',
+          leftList: [
+            'Customer-Arbeit umfasst BP, Auftrag, Lieferung, Faktura und Forderung.',
+            'In S/4 ist BP oft der Startpunkt fur Geschaftspartnerdaten.',
+            'VA03 oder VA05 fur Auftrage, VF03 oder VF05N fur Faktura, FBL5N fur Forderungen.',
+            'Viele Kundenprobleme sind eigentlich Stammdaten-, Kredit- oder Preisfindungsprobleme.'
+          ],
+          rightLabel: 'Arbeitslogik',
+          rightList: [
+            'Kundennummer und Vertriebsbereich bestatigen.',
+            'Prufen, ob Auftrag angelegt und freigegeben wurde.',
+            'Prufen, ob Lieferung und Faktura erfolgt sind.',
+            'Bestatigen, ob FI die Forderung gebucht oder ausgeglichen hat.'
+          ]
+        }
+      ],
+      mapLabel: '02 - Modulbeziehungen',
+      mapTitle: 'Vier Schwerpunkte in einer Geschaftskette',
+      mapIntro: 'Klicke auf ein Modul, um Verantwortung, Beziehungen und den besten Lernstartpunkt zu sehen. Die Customer-Sicht bundelt klassische SD-Aktivitaten am Geschaftsobjekt.',
+      scenarioLabel: 'Szenario',
+      scenarioTitle: 'Am Montagmorgen kommen Bestand, Auftrage, Profit und Kundenproblem gleichzeitig',
+      scenarioText: 'Ein Distributor meldet 3.000 fehlende Cases, Sales sagt der Auftrag sei versendet, Finance sagt Umsatz sei gebucht, und das Customer Team sagt die Gutschrift sei noch offen. Echte Analyse bewegt sich daher uber Modulgrenzen hinweg.',
+      relationshipLabel: 'Beziehungsgefuhl aufbauen',
+      relationshipList: [
+        'Falscher Bestand: in MM starten, dann Supply und Lieferung prufen.',
+        'Lieferengpass-Risiko: in Supply Chain starten, dann Planung oder Einkauf verfolgen.',
+        'Margin-Problem: in FI starten, dann zu MM oder Customer-Dokumenten zuruck.',
+        'Kundenbeschwerde: BP, Auftrag, Faktura und Forderung verbinden.'
+      ],
+      flow: {
+        mm: ['MM', 'Material & Bestand', 'Ursprungsort fur Beschaffung, Bestand und Warenbewegung'],
+        scm: ['Supply Chain', 'Bedarf & Nachschub', 'Verbindet Bestand mit Bedarf und Liefertiming'],
+        fi: ['Finance', 'Belege & Ergebnis', 'Hier landen Umsatz, Kosten, Debitoren und Hauptbuch'],
+        cust: ['Customers', 'BP, Auftrag & Faktura', 'Kundenstamm, Auftrag, Rechnung und Zahlung']
+      },
+      moduleDetails: {
+        mm: {
+          title: 'MM - Materials Management',
+          summary: 'Hier schaust du auf die Ware selbst. In der Praxis ist das oft der erste Einstieg fur Bestand, Materialbelege und Bestellstatus.',
+          leftTitle: 'Typische Aufgaben',
+          leftList: [
+            'Aktuellen Bestand nach SKU und Lagerort prufen.',
+            'Auffallige GI- oder GR-Bewegungen nachverfolgen.',
+            'Prufen, ob eine Bestellung bereits vereinnahmt wurde.',
+            'Saubere Bestandsfakten an Supply Chain oder Sales geben.'
+          ],
+          rightTitle: 'Sichere Transaktionen',
+          tcodes: ['MMBE', 'MB51', 'ME23N', 'ME2N', 'MB52', 'MIGO(display mindset)'],
+          tags: ['MM', 'Inventory', 'GR/GI']
+        },
+        scm: {
+          title: 'Supply Chain - Planung & Fulfilment',
+          summary: 'Hier fragst du, ob die Zukunft abgesichert ist. Diese Sicht verbindet Bestand mit Bedarf, Beschaffung, Planung und Versandtiming.',
+          leftTitle: 'Typische Aufgaben',
+          leftList: [
+            'Abschatzen, wie lange der aktuelle Bestand reicht.',
+            'Erkennen, ob eine Promo die Nachfrage hochzieht.',
+            'Prufen, ob Nachschub existiert oder verspater ist.',
+            'Werk, Einkauf und Logistik auf eine Lucke ausrichten.'
+          ],
+          rightTitle: 'Sichere Transaktionen',
+          tcodes: ['MD04', 'MD07', 'ME5A', 'VL06O', 'CO09'],
+          tags: ['Supply', 'Demand', 'ATP']
+        },
+        fi: {
+          title: 'Finance - FI',
+          summary: 'Hier ubersetzt du Business-Aktivitaten in finanzielle Erklarungen. Umsatz, Kosten, Forderungen und Bestandsdifferenzen enden in Belegen und Konten.',
+          leftTitle: 'Typische Aufgaben',
+          leftList: [
+            'Eine Faktura in den FI-Beleg verfolgen.',
+            'Erklaren, warum die Marge gefallen ist.',
+            'Prufen, ob Kundenforderungen noch offen sind.',
+            'Sehen, wie Bestandsdifferenzen auf Konten wirken.'
+          ],
+          rightTitle: 'Sichere Transaktionen',
+          tcodes: ['FB03', 'FBL5N', 'FBL1N', 'FS10N', 'FAGLL03'],
+          tags: ['FI', 'Document', 'AR/AP']
+        },
+        cust: {
+          title: 'Customers - BP / Auftrag / Faktura',
+          summary: 'Hier fragst du, was beim Kunden wirklich passiert ist. Ein Kunde ist keine einzelne Tabelle, sondern eine Kette aus Stammdaten und Belegen.',
+          leftTitle: 'Typische Aufgaben',
+          leftList: [
+            'Prufen, ob Kundenstammdaten vollstandig oder gesperrt sind.',
+            'Lesen, ob der Auftrag freigegeben und geliefert wurde.',
+            'Prufen, ob Faktura erzeugt wurde.',
+            'Den Kundenfall mit FI-Buchung und Ausgleich verbinden.'
+          ],
+          rightTitle: 'Sichere Transaktionen',
+          tcodes: ['BP', 'VA03', 'VA05', 'VF03', 'VF05N', 'FBL5N'],
+          tags: ['Customer', 'Order', 'Billing']
+        }
+      },
+      dataLabel: '03 - Wo die Daten liegen',
+      dataTitle: 'Dasselbe Geschaft hinterlasst verschiedene Spuren',
+      dataIntro: 'Du wirst schneller, wenn du nicht Definitionen auswendig lernst, sondern erkennst, welches Objekt durch welche Aktion entsteht. Nutze diese Tabelle als Analysekarte.',
+      tableHeaders: ['Geschaftsaktion', 'Systemobjekt', 'Module', 'Welche Fragen du beantworten kannst'],
+      dataRows: [
+        ['Wareneingang im Werk', 'Goods Receipt / Material Document', ['mm', 'scm'], 'Sind die Waren angekommen, wo liegen sie und sind sie nutzbar'],
+        ['Versand an Kunden', 'Delivery + Goods Issue', ['cust', 'mm', 'fi'], 'Wurde geliefert, wurde Bestand reduziert und wurde der Kostenfluss gebucht'],
+        ['Kundenauftrag', 'Sales Order', ['cust'], 'Was wurde bestellt, wann und wie viel ist noch offen'],
+        ['Promo-Nachschub', 'Requirement + Planned Supply', ['scm', 'mm'], 'Entsteht ein Engpass und ist der Nachschub ausreichend'],
+        ['Faktura erzeugt Forderung', 'Billing + FI Document', ['cust', 'fi'], 'Wurde fakturiert und wurde die Forderung gebucht'],
+        ['Bestandsdifferenz Monatsende', 'Inventory Difference Document', ['mm', 'fi'], 'Wie gross ist die Differenz und welches Konto ist betroffen'],
+        ['Kundenabzug oder Gutschrift', 'Credit Memo / Customer Line Item', ['cust', 'fi'], 'Wurde die Gutschrift erstellt und die Forderung reduziert'],
+        ['Margenanalyse', 'GL / Margin View', ['fi', 'cust', 'mm'], 'Woher kommen Umsatz, Kosten und Trade Spend']
+      ],
+      simLabel: '04 - SAP GUI Simulation',
+      simTitle: 'Ein realistischer SAP-GUI-Stil-Bildschirm ohne Firmenrisiko',
+      simIntro: 'Die folgende Oberflache wird komplett in dieser HTML-Datei gerendert. Alle Buttons sind read-only und alle Tabellen nutzen fest codierte Demo-Werte, damit du Layout und Feldbedeutung lernst, ohne produktive Daten zu beruhren.',
+      simSafetyBadge: 'SAFE MODE · display only · no posting · no API · no company privacy',
+      simTabs: ['MMBE Inventory', 'MD04 Supply', 'FB03 Finance', 'BP Customer'],
+      sapWindowTitle: 'SAP Easy Access - Training Sandbox',
+      sapToolbar: ['System', 'Favorites', 'Extras', 'Help'],
+      sapNavTitle: 'Navigation',
+      sapCommandLabel: 'Transaktion',
+      runSim: 'Anzeigen',
+      simGoalTitle: 'Was du hier lernst',
+      simHowTitle: 'Wie du den Bildschirm liest',
+      simFilterTitle: 'Typische Filterfelder',
+      safeTitle1: 'Warum diese Ubung sicher ist',
+      safeText1: 'Dies ist eine einzelne lokale HTML-Datei. Kein Login, kein Connector, kein Upload, kein Write-back und kein Zugriff auf ein Firmensystem.',
+      safeTitle2: 'Wie du sie gut nutzt',
+      safeText2: 'Nutze sie, um Screens und Analysepfade zu verinnerlichen. Wenn dir das Layout vertraut ist, wiederhole dieselbe Logik im Firmensystem mit Anzeige-Berechtigung.',
+      sims: {
+        mmbe: {
+          tree: ['Logistics', 'Materials Management', 'Inventory Management', 'Stock Overview (MMBE)'],
+          goal: 'Lerne, Bestand nach Material, Werk, Lagerort und Charge zu lesen.',
+          how: 'Bestatige zuerst Material und Werk und trenne dann Unrestricted, Quality und Blocked sauber voneinander.',
+          filters: [
+            ['Material', 'FG-CHOC-01'],
+            ['Plant', 'CN10'],
+            ['Storage Location', 'FG01'],
+            ['Batch', 'B240318']
+          ],
+          headers: ['Plant', 'SLoc', 'Material', 'Unrestricted', 'Quality', 'Blocked', 'Batch'],
+          rows: [
+            ['CN10', 'FG01', 'FG-CHOC-01', '12,400', '320', '0', 'B240318'],
+            ['CN10', 'RET1', 'FG-CHOC-01', '1,050', '0', '180', 'B240201'],
+            ['CN20', 'FG01', 'FG-CHOC-01', '8,600', '0', '0', 'B240315']
+          ]
+        },
+        md04: {
+          tree: ['Logistics', 'Production Planning', 'MRP', 'Stock/Requirements List (MD04)'],
+          goal: 'Lerne, heutigen Bestand und zukunftigen Bedarf auf einer Zeitachse zu lesen.',
+          how: 'Lies zuerst den Anfangsbestand, dann Bedarfsdaten, dann Nachschubtermine und entscheide erst danach, ob wirklich ein Engpass besteht.',
+          filters: [
+            ['Material', 'FG-CHOC-01'],
+            ['Plant', 'CN10'],
+            ['MRP Area', 'CN10-DC'],
+            ['Planning Horizon', '14 days']
+          ],
+          headers: ['Date', 'MRP Element', 'Element Data', 'Receipt', 'Issue', 'Available Qty'],
+          rows: [
+            ['2026-03-30', 'Stock', 'Opening stock', '12,400', '-', '12,400'],
+            ['2026-04-01', 'SalesOrd', 'SO 45009812', '-', '4,200', '8,200'],
+            ['2026-04-03', 'Deliv.', 'Promo shipment', '-', '5,000', '3,200'],
+            ['2026-04-04', 'PurReq', 'PR 100231', '6,000', '-', '9,200'],
+            ['2026-04-08', 'SalesOrd', 'Key account order', '-', '7,500', '1,700']
+          ]
+        },
+        fb03: {
+          tree: ['Accounting', 'Financial Accounting', 'General Ledger', 'Display Document (FB03)'],
+          goal: 'Lerne, wie ein Business-Ereignis Umsatz, Steuer, Kosten oder Forderung beeinflusst.',
+          how: 'Beginne mit Belegdatum und Referenz, lies Soll und Haben und ubersetze das Buchungsmuster dann zuruck in das Business-Ereignis.',
+          filters: [
+            ['Company Code', 'CN01'],
+            ['Document No.', '1900004821'],
+            ['Fiscal Year', '2026'],
+            ['Document Type', 'RV']
+          ],
+          headers: ['GL Account', 'Description', 'Debit', 'Credit', 'Cost Center', 'Reference'],
+          rows: [
+            ['113100', 'Accounts Receivable', '24,500.00', '-', 'N/A', 'Billing 90014582'],
+            ['600100', 'Domestic Sales Revenue', '-', '21,681.42', 'N/A', 'Sales order 45009812'],
+            ['222100', 'Output Tax', '-', '2,818.58', 'N/A', 'Tax line']
+          ]
+        },
+        bp: {
+          tree: ['Cross-Application', 'SAP Business Partner', 'Master Data', 'Display BP'],
+          goal: 'Lerne, welche Kundenstammdaten den Order-to-Cash-Prozess beeinflussen konnen.',
+          how: 'Prufe zuerst BP-Status und Rolle und dann Vertriebsbereich, Zahlungsbedingung, Kredit und fehlende Pflichtfelder.',
+          filters: [
+            ['Business Partner', 'BP-CN-RETL-028'],
+            ['Role', 'Customer'],
+            ['Sales Org', 'CN10'],
+            ['Distribution Channel', 'Modern Trade']
+          ],
+          headers: ['Field', 'Value', 'Meaning', 'Risk Signal'],
+          rows: [
+            ['Name', 'North Retail Group', 'Key account customer', 'Low'],
+            ['Payment Terms', 'N45', '45 days payment', 'Medium'],
+            ['Credit Status', 'Released', 'Orders can proceed', 'Low'],
+            ['Incompletion Log', 'Address missing tax contact', 'May block invoicing in some cases', 'Medium']
+          ]
+        }
+      },
+      caseLabel: '05 - Cross-Module Analyse',
+      caseTitle: 'Wenn ein echtes Problem auftaucht, folgst du diesem Pfad',
+      caseIntro: 'Diese 8 Schritte sind als praktische SOP gedacht. Lerne die Reihenfolge, nicht nur die Codes.',
+      caseCards: [
+        ['1', 'Objekt definieren', 'Ist es eine Bestandsdifferenz, ein Kunden-Nichtempfang, ein Engpassrisiko oder ein Margenproblem? Das Objekt bestimmt den Einstieg.'],
+        ['2', 'Schlussel sichern', 'Besorge mindestens zwei von diesen Schlusseln: SKU, Werk, Kunde, Auftragsnummer, Rechnungsnummer. Ohne Schlussel wird jedes Modul verrauscht.'],
+        ['3', 'Zu MM fur die physische Wahrheit', 'Prufe Buchbestand, Charge und Lagerort, bevor du uber andere Ursachen diskutierst.'],
+        ['4', 'Zur Supply-Sicht fur Zukunftsrisiken', 'Wenn das Problem ein kommender Engpass ist, musst du in eine Bedarf-Versorgung-Sicht wie MD04 wechseln.'],
+        ['5', 'Zur Customer-Sicht fur Auftrag und Lieferung', 'Nicht erhalten heisst nicht automatisch nicht versendet, und versendet heisst nicht automatisch, dass die ganze Kette sauber ist.'],
+        ['6', 'Zu Finance fur die Endwirkung', 'Um Business Impact zu erklaren, brauchst du am Ende FB03, FBL5N oder Hauptbuchdetails.'],
+        ['7', 'Den gebrochenen Ubergang suchen', 'Probleme entstehen oft an Schnittstellen: Bestand zu Lieferung, Faktura zu AR oder Stammdaten zu Auftrag.'],
+        ['8', 'Ein-Satz-Fazit formulieren', 'Beispiel: Der Bestand selbst ist in Ordnung; die Lucke entstand durch eine fruhe Promo-Lieferung am 3. April bei verspatetem Nachschub-PR.']
+      ],
+      quizLabel: '06 - Uben',
+      quizTitle: 'Du solltest jetzt wissen, welches Modul du zuerst offnest',
+      quizIntro: 'Diese Fragen testen den nachsten Schritt, nicht nur eine Definition.',
+      quizPrev: 'Zuruck',
+      quizNext: 'Weiter',
+      quizDone: 'Fertig',
+      quizProgress: (n, total) => `Frage ${n} / ${total}`,
+      questions: [
+        {
+          q: 'Ein Kunde sagt, die Sendung vom 28. Marz sei nie angekommen, aber Sales sagt, sie sei versendet. Was ist dein bester erster Schritt?',
+          context: 'Du willst Lieferereignis und Warenbewegung validieren, nicht nur einer Erzahlung folgen.',
+          options: [
+            'Nur FB03 prufen, weil Versand immer in Finance startet.',
+            'Lieferung aus Kundensicht prufen und dann Goods Issue in MM validieren.',
+            'Nur BP prufen, weil Kundenprobleme immer bei Stammdaten anfangen.',
+            'Logistik sofort um Neuversand bitten.'
+          ],
+          correct: 1,
+          correctText: 'Richtig. Zuerst Lieferung und Verbuchung bestatigen und dann prufen, ob GI den Bestand in MM wirklich reduziert hat. So trennst du echte Lieferung von einem rein behaupteten Systemstatus.',
+          wrongText: 'Noch nicht ganz. Bei einer nicht angekommenen Sendung solltest du zuerst Lieferung und GI validieren, bevor du zu FI oder Stammdaten springst.'
+        },
+        {
+          q: 'Eine SKU wird nachster Woche auslaufen, obwohl der heutige Bestand gesund aussieht. Welche Transaktion offnest du zuerst?',
+          context: 'Das ist ein zukunftiger Bedarf-Versorgungs-Fall, kein statischer Bestandsfall.',
+          options: [
+            'MMBE',
+            'FB03',
+            'MD04',
+            'BP'
+          ],
+          correct: 2,
+          correctText: 'Richtig. MD04 zeigt Bedarf und Nachschub auf derselben Zeitachse und ist daher die beste erste Sicht fur einen kommenden Engpass.',
+          wrongText: 'Der statische Bestand reicht hier nicht. Das Risiko liegt in der Zukunftsachse, daher ist MD04 der bessere Start.'
+        },
+        {
+          q: 'Finance sagt, die Marge eines grossen Kunden ist diesen Monat zu niedrig. Wo solltest du beginnen?',
+          context: 'Margenprobleme sollten zuerst im gebuchten Ergebnis verankert werden.',
+          options: [
+            'FB03 oder Hauptbuchdetail',
+            'Nur MMBE',
+            'Nur BP',
+            'Zuerst Sales fragen'
+          ],
+          correct: 0,
+          correctText: 'Richtig. Marge ist ein finanzielles Ergebnis, daher beginnst du mit FI-Belegen oder Hauptbuchbewegungen und gehst erst danach in Auftrag und Bestand zuruck.',
+          wrongText: 'Das finanzielle Ergebnis braucht zuerst einen finanziellen Einstieg. Bestand oder Kundenstamm kommen gegebenenfalls spater.'
+        },
+        {
+          q: 'Das Customer Team sagt, Auftrag und Lieferung sehen normal aus, aber die Rechnung ist noch nicht raus. Was hat Prioritat?',
+          context: 'Das ist ein klassisches Problem im Order-to-Cash-Ubergang.',
+          options: [
+            'Ob ein Billing-Dokument existiert und ob Stammdaten unvollstandig sind',
+            'Ob mehr Sicherheitsbestand verfugbar ist',
+            'Ob eine neue BANF existiert',
+            'Ob der Rechner neu gestartet werden muss'
+          ],
+          correct: 0,
+          correctText: 'Richtig. Fehlende Faktura deutet meist auf ein Billing-Objekt oder unvollstandige Kunden-, Preis- oder Steuerdaten hin.',
+          wrongText: 'Der erste Verdacht sollte Billing und Datenvollstandigkeit gelten, nicht Bestand oder Einkauf.'
+        }
+      ],
+      footerLeft: 'SAP fur FMCG · Offline Learning Studio · Nur Demo',
+      footerRight: 'Keine API · Kein Login · Keine Firmen-Privacy betroffen'
+    }
+  };
+
+  const glossary = {
+    zh: [
+      { id: 'mm', key: 'MM', title: 'MM', plain: 'MM 就是管货的地方。你可以把它理解成“货有没有、在哪里、怎么进来出去”的总入口。', why: '只要你在查库存、收货、发货、采购状态，通常都绕不开 MM。', example: '比如销售说已经发货了，你就可以回 MM 看库存有没有真的被扣掉。', search: 'SAP MM inventory goods movement' },
+      { id: 'inventory', key: '库存', title: '库存', plain: '库存就是系统账上记录“现在还有多少货”。不是仓库肉眼看到的数量，而是 SAP 记下来的数量。', why: '库存是很多问题的起点。账面库存不对，后面的供货、销售、利润都会跟着偏。', example: '你看到 distributor 少收货时，先确认库存是否已经被系统扣减。', search: 'SAP inventory stock overview' },
+      { id: 'goods-issue', key: 'Goods Issue', title: 'Goods Issue (GI)', plain: 'GI 就是“货出去了”。系统会把库存扣掉，很多场景下还会同步产生财务影响。', why: '很多“说是发货了”的争议，关键就在于有没有真的做 GI。', example: '交货单建了不代表货真的出库，做了 GI 才说明系统认定这批货出去了。', search: 'SAP Goods Issue GI meaning' },
+      { id: 'goods-receipt', key: 'Goods Receipt', title: 'Goods Receipt (GR)', plain: 'GR 就是“货进来了”。系统把这批货记到库存里。', why: '如果货迟迟不到，或者采购说到了但系统没看到，就要回到 GR。', example: '采购单已经下了，但仓库没可用库存，就要查有没有完成 GR。', search: 'SAP Goods Receipt GR meaning' },
+      { id: 'mmbe', key: 'MMBE', title: 'MMBE', plain: 'MMBE 是最经典的库存总览界面。它让你按物料、工厂、库存地点、批次查看库存。', why: '这是新人最该先熟悉的库存事务码之一，因为它最直观。', example: '想知道 FG-CHOC-01 在 CN10 工厂还有多少可用库存，就先开 MMBE。', search: 'SAP MMBE stock overview' },
+      { id: 'md04', key: 'MD04', title: 'MD04', plain: 'MD04 是供需时间线。它不是只告诉你今天有多少货，而是告诉你未来什么时候会缺。', why: '很多问题不是“现在没货”，而是“下周会断货”，这种就该看 MD04。', example: '促销订单三天后集中发货，但补货明天还没到，MD04 会把这个缺口显示出来。', search: 'SAP MD04 stock requirements list' },
+      { id: 'business-partner', key: 'BP', title: 'Business Partner (BP)', plain: 'BP 可以理解成客户或供应商的主档入口。它记录这个业务对象是谁、怎么交易、有哪些关键属性。', why: '很多客户问题不是订单错，而是主数据不完整，BP 就是排查入口之一。', example: '客户地址、税信息、信用状态有问题时，订单或开票可能被卡住。', search: 'SAP S4 BP business partner' },
+      { id: 'billing', key: 'Billing', title: 'Billing', plain: 'Billing 就是系统开票动作，把业务单据变成发票或贷记。', why: '如果已经发货但客户还没被开票，现金流和应收就会断在这里。', example: '客户说没收到发票时，你就要先确认 billing document 是否生成。', search: 'SAP billing document meaning' },
+      { id: 'receivable', key: '应收账款', title: '应收账款', plain: '应收账款就是客户欠公司的钱。开票以后，这笔钱通常会先挂在应收里。', why: '客户有没有欠款、有没有清账、credit note 有没有冲掉应收，都在这里体现。', example: '客户说自己已经付款，你可以从应收行项目看这笔钱是否已清。', search: 'SAP accounts receivable FBL5N' },
+      { id: 'margin', key: 'Gross Margin', title: 'Gross Margin', plain: 'Gross Margin 就是收入减去直接相关成本后剩下的毛利。', why: '毛利异常往往不是一个数字问题，而是收入、成本、扣减里某一环出了问题。', example: '如果某个 SKU 毛利突然很低，就要去 FI 看是不是有额外成本或扣减落账。', search: 'SAP gross margin copa fi' },
+      { id: 'master-data', key: '主数据', title: '主数据', plain: '主数据就是不经常改、但所有业务都要依赖的基础资料，比如客户、物料、工厂、付款条件。', why: '很多流程卡住不是因为业务单据错了，而是主数据缺字段或配置不对。', example: '客户税信息不完整，订单可能能建，但开票会失败。', search: 'SAP master data basics' },
+      { id: 'material-doc', key: 'Material Document', title: 'Material Document', plain: 'Material Document 是货物移动留下的系统痕迹。每次收货、发货、转储，通常都会有它。', why: '如果你想知道库存为什么变了，最直接的证据往往就是 Material Document。', example: '查某个 SKU 昨天为什么少了 500 箱，可以去看对应的 material document。', search: 'SAP material document MB51' }
+    ],
+    en: [
+      { id: 'mm', key: 'MM', title: 'MM', plain: 'MM is the place where SAP keeps track of the product itself: what stock exists, where it sits, and how it moved in or out.', why: 'If you are checking inventory, receipts, issues, or PO-related stock questions, MM is usually your starting point.', example: 'If sales says a shipment went out, MM helps you confirm whether stock was actually reduced.', search: 'SAP MM inventory goods movement' },
+      { id: 'inventory', key: 'inventory', title: 'Inventory', plain: 'Inventory is the stock quantity SAP believes you have. It is the system view of stock, not just what someone thinks is in the warehouse.', why: 'Inventory accuracy affects supply, customer fulfilment, and finance at the same time.', example: 'If a distributor says cases are missing, first check whether SAP inventory already moved.', search: 'SAP inventory stock overview' },
+      { id: 'goods-issue', key: 'Goods Issue', title: 'Goods Issue (GI)', plain: 'Goods Issue means the system recognizes that goods have left stock. This usually reduces inventory and can create financial impact.', why: 'Many shipment disputes come down to whether GI really happened.', example: 'A delivery document may exist, but without GI the system has not fully recognized the outbound movement.', search: 'SAP Goods Issue GI meaning' },
+      { id: 'goods-receipt', key: 'Goods Receipt', title: 'Goods Receipt (GR)', plain: 'Goods Receipt means the system recognizes that goods have arrived and can now be recorded into stock.', why: 'When purchasing says goods arrived but stock is still missing, GR is one of the first things to verify.', example: 'A PO may exist, but usable stock often does not appear until GR is posted.', search: 'SAP Goods Receipt GR meaning' },
+      { id: 'mmbe', key: 'MMBE', title: 'MMBE', plain: 'MMBE is the classic stock overview screen. It shows stock by material, plant, storage location, and batch.', why: 'It is one of the most practical display transactions for beginners because it gives a fast visual stock picture.', example: 'If you want to see how much usable stock FG-CHOC-01 has in plant CN10, MMBE is a strong first screen.', search: 'SAP MMBE stock overview' },
+      { id: 'md04', key: 'MD04', title: 'MD04', plain: 'MD04 is a timeline view of supply and demand. It tells you not only what stock exists now, but when shortages may appear later.', why: 'Future shortage problems are usually easier to understand in MD04 than in a static inventory view.', example: 'A promo order may consume stock on Friday while replenishment arrives on Monday, and MD04 makes that gap visible.', search: 'SAP MD04 stock requirements list' },
+      { id: 'business-partner', key: 'Business Partner', title: 'Business Partner (BP)', plain: 'Business Partner is the S/4 style master-data object for customers, vendors, and related business entities.', why: 'A surprising number of customer-side issues come from incomplete or blocked master data rather than the order itself.', example: 'Missing tax, address, or credit information in BP can delay order processing or billing.', search: 'SAP S4 BP business partner' },
+      { id: 'billing', key: 'Billing', title: 'Billing', plain: 'Billing is the step where a business event becomes an invoice or credit memo in the system.', why: 'If delivery happened but billing did not, the order-to-cash chain is incomplete.', example: 'When a customer says no invoice was received, billing is the first object to confirm.', search: 'SAP billing document meaning' },
+      { id: 'receivable', key: 'receivable', title: 'Receivable', plain: 'A receivable is money the customer owes the company. After billing, it often appears as an open customer item.', why: 'Open receivables help you understand whether the customer has been invoiced, cleared, or offset by credit.', example: 'If a customer says payment was already made, receivables tell you whether the item is still open.', search: 'SAP accounts receivable FBL5N' },
+      { id: 'margin', key: 'margin', title: 'Margin', plain: 'Margin is the business result left after revenue is reduced by relevant cost and commercial deductions.', why: 'When margin looks wrong, the issue may be in revenue, cost, or trade spend, so you need a financial trace.', example: 'A low margin month may come from extra cost postings, price adjustments, or customer deductions.', search: 'SAP gross margin copa fi' },
+      { id: 'master-data', key: 'master data', title: 'Master Data', plain: 'Master data is the foundational information reused across transactions, such as customer, material, plant, payment terms, and tax setup.', why: 'Many process failures are not transaction errors; they are master-data completeness or configuration issues.', example: 'Billing can fail even when order and delivery look fine if master data is incomplete.', search: 'SAP master data basics' },
+      { id: 'material-doc', key: 'Material Document', title: 'Material Document', plain: 'A material document is SAP’s evidence that a goods movement happened.', why: 'When stock changes unexpectedly, the material document is often the clearest trail to follow.', example: 'If 500 cases disappeared yesterday, the material document history can show the actual movement.', search: 'SAP material document MB51' }
+    ],
+    de: [
+      { id: 'mm', key: 'MM', title: 'MM', plain: 'MM ist der Bereich fur die Ware selbst: welcher Bestand existiert, wo er liegt und wie er hinein- oder hinausbewegt wurde.', why: 'Wenn du Bestand, Wareneingang, Warenausgang oder beschaffungsnahe Fragen prufst, ist MM oft dein erster Einstieg.', example: 'Wenn Sales sagt, eine Lieferung sei raus, kannst du in MM prufen, ob der Bestand wirklich reduziert wurde.', search: 'SAP MM inventory goods movement' },
+      { id: 'inventory', key: 'Bestand', title: 'Bestand', plain: 'Bestand ist die Menge, von der SAP glaubt, dass sie vorhanden ist. Es ist die Systemsicht auf die Ware.', why: 'Bestandsgenauigkeit wirkt gleichzeitig auf Supply, Kundenbelieferung und Finance.', example: 'Wenn ein Distributor fehlende Cases meldet, prufst du zuerst, ob SAP den Bestand bereits bewegt hat.', search: 'SAP inventory stock overview' },
+      { id: 'goods-issue', key: 'Goods Issue', title: 'Goods Issue (GI)', plain: 'Goods Issue bedeutet, dass das System anerkennt, dass Ware den Bestand verlassen hat. Dadurch sinkt oft der Bestand und es kann Finance-Effekt geben.', why: 'Viele Versanddiskussionen drehen sich am Ende darum, ob GI wirklich stattgefunden hat.', example: 'Eine Lieferung kann existieren, aber ohne GI ist die ausgehende Bewegung nicht vollstandig im System angekommen.', search: 'SAP Goods Issue GI meaning' },
+      { id: 'goods-receipt', key: 'Goods Receipt', title: 'Goods Receipt (GR)', plain: 'Goods Receipt bedeutet, dass das System den Eingang der Ware erkennt und sie in den Bestand ubernehmen kann.', why: 'Wenn Einkauf sagt, Ware sei angekommen, der Bestand aber fehlt, ist GR eine der ersten Prufungen.', example: 'Eine Bestellung kann da sein, aber nutzbarer Bestand erscheint oft erst nach GR.', search: 'SAP Goods Receipt GR meaning' },
+      { id: 'mmbe', key: 'MMBE', title: 'MMBE', plain: 'MMBE ist die klassische Bestandsubersicht. Du siehst Bestand nach Material, Werk, Lagerort und Charge.', why: 'Fur Einsteiger ist das eine der praktischsten Anzeige-Transaktionen, weil sie schnell ein Bestandsbild liefert.', example: 'Wenn du sehen willst, wie viel nutzbarer Bestand FG-CHOC-01 im Werk CN10 hat, ist MMBE ein guter Start.', search: 'SAP MMBE stock overview' },
+      { id: 'md04', key: 'MD04', title: 'MD04', plain: 'MD04 ist eine Zeitachsen-Sicht auf Bedarf und Versorgung. Du siehst nicht nur den Bestand von heute, sondern auch kunftige Engpasse.', why: 'Zukunftige Engpasse versteht man meist besser in MD04 als in einer statischen Bestandsansicht.', example: 'Eine Promo verbraucht am Freitag Bestand, wahrend Nachschub erst am Montag kommt. MD04 macht diese Lucke sichtbar.', search: 'SAP MD04 stock requirements list' },
+      { id: 'business-partner', key: 'BP', title: 'Business Partner (BP)', plain: 'Business Partner ist in S/4 das Stammdatenobjekt fur Kunden, Lieferanten und ahnliche Geschaftspartner.', why: 'Viele Kundenprobleme kommen nicht vom Auftrag selbst, sondern von unvollstandigen oder gesperrten Stammdaten.', example: 'Fehlende Steuer-, Adress- oder Kreditinformationen in BP konnen Auftrag oder Faktura verzogern.', search: 'SAP S4 BP business partner' },
+      { id: 'billing', key: 'Billing', title: 'Billing', plain: 'Billing ist der Schritt, in dem ein Geschaftsvorgang zu Rechnung oder Gutschrift wird.', why: 'Wenn geliefert wurde, aber keine Faktura entstand, ist die Order-to-Cash-Kette unvollstandig.', example: 'Wenn der Kunde sagt, keine Rechnung erhalten zu haben, ist Billing das erste Objekt zur Bestatigung.', search: 'SAP billing document meaning' },
+      { id: 'receivable', key: 'Forderung', title: 'Forderung', plain: 'Eine Forderung ist Geld, das der Kunde dem Unternehmen schuldet. Nach der Faktura erscheint sie oft als offener Posten.', why: 'Offene Forderungen zeigen, ob der Kunde fakturiert, ausgeglichen oder per Gutschrift reduziert wurde.', example: 'Wenn ein Kunde sagt, schon bezahlt zu haben, zeigt die Forderungssicht, ob der Posten noch offen ist.', search: 'SAP accounts receivable FBL5N' },
+      { id: 'margin', key: 'Marge', title: 'Marge', plain: 'Die Marge ist das Ergebnis, das nach Umsatz, direkten Kosten und kommerziellen Abzugen ubrig bleibt.', why: 'Wenn die Marge falsch aussieht, kann die Ursache in Umsatz, Kosten oder Trade Spend liegen und braucht Finance-Nachverfolgung.', example: 'Eine niedrige Monatsmarge kann durch Zusatzkosten, Preisanpassungen oder Kundenabzuge entstehen.', search: 'SAP gross margin copa fi' },
+      { id: 'master-data', key: 'Stammdaten', title: 'Stammdaten', plain: 'Stammdaten sind Grundinformationen, die in vielen Transaktionen wiederverwendet werden, zum Beispiel Kunde, Material, Werk oder Zahlungsbedingung.', why: 'Viele Prozessfehler sind keine Transaktionsfehler, sondern Vollstandigkeits- oder Konfigurationsprobleme in Stammdaten.', example: 'Billing kann scheitern, obwohl Auftrag und Lieferung normal aussehen, wenn Stammdaten unvollstandig sind.', search: 'SAP master data basics' },
+      { id: 'material-doc', key: 'Material Document', title: 'Material Document', plain: 'Ein Material Document ist der Systemnachweis, dass eine Warenbewegung stattgefunden hat.', why: 'Wenn sich Bestand unerwartet verandert, ist das Material Document oft die klarste Spur.', example: 'Wenn gestern 500 Cases verschwunden sind, zeigt dir die Materialbeleg-Historie die konkrete Bewegung.', search: 'SAP material document MB51' }
+    ]
+  };
+
+  function t() {
+    return i18n[app.lang];
+  }
+
+  function g() {
+    return glossary[app.lang];
+  }
+
+  function glossaryById(id) {
+    return g().find(item => item.id === id);
+  }
+
+  function getFocusTerms() {
+    return JSON.parse(localStorage.getItem('sapOfflineFocusTerms') || '[]');
+  }
+
+  function setFocusTerms(terms) {
+    localStorage.setItem('sapOfflineFocusTerms', JSON.stringify(terms));
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(resolve => {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      textarea.remove();
+      resolve();
+    });
+  }
+
+  function buildCopilotPrompt(entry) {
+    return `Explain the SAP term "${entry.title}" to a beginner working in FMCG.\n\nPlease answer in ${app.lang === 'zh' ? 'Chinese' : app.lang === 'de' ? 'German' : 'English'} and cover:\n1. What it is in plain language\n2. Why it matters in SAP S/4\n3. Which transaction or screen it connects to\n4. One concrete business example\n5. What data mistake beginners often make around it`;
+  }
+
+  function renderFocus() {
+    const copy = t();
+    const focusTerms = getFocusTerms();
+    document.getElementById('focusTitle').textContent = copy.focusTitle;
+    document.getElementById('focusDesc').textContent = copy.focusDesc;
+    const box = document.getElementById('focusTags');
+    box.innerHTML = '';
+    if (!focusTerms.length) {
+      box.innerHTML = `<span class="glossary-empty">${copy.focusDesc}</span>`;
+      return;
+    }
+    focusTerms.forEach(id => {
+      const entry = glossaryById(id);
+      if (!entry) return;
+      const tag = document.createElement('span');
+      tag.className = 'focus-tag mono';
+      tag.innerHTML = `${entry.title} <button type="button" data-remove-focus="${id}">×</button>`;
+      box.appendChild(tag);
+    });
+    box.querySelectorAll('[data-remove-focus]').forEach(btn => {
+      btn.onclick = () => {
+        setFocusTerms(getFocusTerms().filter(item => item !== btn.dataset.removeFocus));
+        renderFocus();
+      };
+    });
+  }
+
+  function addFocusTerm(id) {
+    const current = getFocusTerms();
+    if (!current.includes(id)) {
+      current.push(id);
+      setFocusTerms(current);
+      renderFocus();
+    }
+  }
+
+  function closeGlossary() {
+    app.activeGlossaryId = null;
+    document.getElementById('glossaryCard').classList.remove('active');
+  }
+
+  function openGlossary(id) {
+    const copy = t();
+    const entry = glossaryById(id);
+    if (!entry) return;
+    app.activeGlossaryId = id;
+    document.getElementById('glossaryMeta').textContent = copy.glossaryMetaLabel;
+    document.getElementById('glossaryTitle').textContent = entry.title;
+    document.getElementById('glossaryPlain').textContent = entry.plain;
+    document.getElementById('glossaryWhyLabel').textContent = copy.glossaryWhyLabel;
+    document.getElementById('glossaryWhy').textContent = entry.why;
+    document.getElementById('glossaryExampleLabel').textContent = copy.glossaryExampleLabel;
+    document.getElementById('glossaryExample').textContent = entry.example;
+    const prompt = buildCopilotPrompt(entry);
+    const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(entry.search)}`;
+    const sapUrl = `https://www.google.com/search?q=${encodeURIComponent(`site:help.sap.com ${entry.search}`)}`;
+    document.getElementById('glossaryActions').innerHTML = `
+      <a href="${googleUrl}" target="_blank" rel="noreferrer">${copy.glossaryActions.google}</a>
+      <a href="${sapUrl}" target="_blank" rel="noreferrer">${copy.glossaryActions.sap}</a>
+      <button type="button" id="copyCopilotPromptBtn">${copy.glossaryActions.copilot}</button>
+      <button type="button" id="addFocusBtn">${copy.glossaryActions.focus}</button>
+    `;
+    document.getElementById('copyCopilotPromptBtn').onclick = async () => {
+      await copyText(prompt);
+      document.getElementById('copyCopilotPromptBtn').textContent = copy.glossaryActions.copied;
+      setTimeout(() => {
+        const btn = document.getElementById('copyCopilotPromptBtn');
+        if (btn) btn.textContent = copy.glossaryActions.copilot;
+      }, 1200);
+      window.open('https://copilot.microsoft.com/', '_blank', 'noopener');
+    };
+    document.getElementById('addFocusBtn').onclick = () => addFocusTerm(id);
+    document.getElementById('glossaryCard').classList.add('active');
+  }
+
+  function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function enhanceGlossary(root) {
+    const terms = [...g()].sort((a, b) => b.key.length - a.key.length);
+    const map = new Map(terms.map(term => [term.key, term]));
+    const pattern = new RegExp(terms.map(term => escapeRegExp(term.key)).join('|'), 'g');
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        const parent = node.parentElement;
+        if (!parent) return NodeFilter.FILTER_REJECT;
+        if (parent.closest('.glossary-card, .glossary-term, .focus-tag, .glossary-actions')) return NodeFilter.FILTER_REJECT;
+        if (['SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'SELECT', 'OPTION', 'BUTTON'].includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    textNodes.forEach(node => {
+      const text = node.nodeValue;
+      pattern.lastIndex = 0;
+      if (!pattern.test(text)) return;
+      pattern.lastIndex = 0;
+      const fragment = document.createDocumentFragment();
+      let lastIndex = 0;
+      let match;
+      while ((match = pattern.exec(text))) {
+        if (match.index > lastIndex) fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+        const key = match[0];
+        const term = map.get(key);
+        const span = document.createElement('span');
+        span.className = 'glossary-term';
+        span.dataset.glossaryId = term.id;
+        span.textContent = key;
+        fragment.appendChild(span);
+        lastIndex = match.index + key.length;
+      }
+      if (lastIndex < text.length) fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+      node.parentNode.replaceChild(fragment, node);
+    });
+  }
+
+  function saveQuizState() {
+    localStorage.setItem('sapOfflineQuizState', JSON.stringify(app.answered));
+  }
+
+  function getProgressState() {
+    return JSON.parse(localStorage.getItem('sapOfflineModuleState') || '{}');
+  }
+
+  function setProgressState(state) {
+    localStorage.setItem('sapOfflineModuleState', JSON.stringify(state));
+  }
+
+  function markCourseDone(index) {
+    const state = getProgressState();
+    state[index] = true;
+    setProgressState(state);
+    renderRoadmap();
+  }
+
+  function resetProgress() {
+    localStorage.removeItem('sapOfflineModuleState');
+    app.answered = new Array(t().questions.length).fill(false);
+    saveQuizState();
+    app.currentQuestion = 0;
+    renderRoadmap();
+    renderQuiz();
+  }
+
+  function renderHero() {
+    const copy = t();
+    document.documentElement.lang = app.lang === 'zh' ? 'zh-CN' : app.lang;
+    document.title = copy.logo;
+    document.getElementById('logoText').textContent = copy.logo;
+    document.getElementById('offlineBadge').textContent = copy.offlineBadge;
+    document.getElementById('heroEyebrow').textContent = copy.heroEyebrow;
+    document.getElementById('heroTitle').innerHTML = copy.heroTitle;
+    document.getElementById('heroDesc').textContent = copy.heroDesc;
+    document.getElementById('heroPanelTitle').textContent = copy.heroPanelTitle;
+    copy.heroStats.forEach((item, index) => {
+      document.getElementById(`heroStat${index + 1}Value`).textContent = item[0];
+      document.getElementById(`heroStat${index + 1}Label`).textContent = item[1];
+    });
+    document.getElementById('jumpRoadmapBtn').textContent = copy.jumpRoadmap;
+    document.getElementById('jumpSimulatorBtn').textContent = copy.jumpSimulator;
+    document.getElementById('glossaryHint').textContent = copy.glossaryHint;
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === app.lang));
+  }
+
+  function renderRoadmap() {
+    const copy = t();
+    const state = getProgressState();
+    const done = Object.values(state).filter(Boolean).length;
+    const total = copy.coursePanels.length;
+    document.getElementById('roadmapLabel').textContent = copy.roadmapLabel;
+    document.getElementById('roadmapTitle').textContent = copy.roadmapTitle;
+    document.getElementById('roadmapIntro').textContent = copy.roadmapIntro;
+    document.getElementById('roadmapProgressText').textContent = copy.roadmapProgress(done, total);
+    document.getElementById('resetProgressBtn').textContent = copy.resetProgress;
+    document.getElementById('roadmapFill').style.width = `${(done / total) * 100}%`;
+
+    const tabs = document.getElementById('courseTabs');
+    const panels = document.getElementById('coursePanels');
+    tabs.innerHTML = '';
+    panels.innerHTML = '';
+
+    copy.roadmapTabs.forEach((label, index) => {
+      const btn = document.createElement('button');
+      btn.className = `course-tab mono ${app.currentCourse === index ? 'active' : ''}`;
+      btn.textContent = label;
+      btn.onclick = () => {
+        app.currentCourse = index;
+        renderRoadmap();
+      };
+      tabs.appendChild(btn);
+    });
+
+    copy.coursePanels.forEach((panel, index) => {
+      const section = document.createElement('div');
+      section.className = `course-panel ${app.currentCourse === index ? 'active' : ''}`;
+      section.innerHTML = `
+        <div class="lesson-grid">
+          <div class="lesson-block">
+            <div class="card-label mono">${panel.leftLabel}</div>
+            <div class="card-title">${panel.title}</div>
+            <div class="list">${panel.leftList.map(item => `<div>${item}</div>`).join('')}</div>
+          </div>
+          <div class="lesson-block">
+            <div class="card-label mono">${panel.rightLabel}</div>
+            <div class="card-title">${panel.title}</div>
+            <div class="list">${panel.rightList.map(item => `<div>${item}</div>`).join('')}</div>
+          </div>
+        </div>
+        <div style="margin-top:1rem;">
+          <button class="btn primary mono" data-course-done="${index}">${state[index] ? '✓ ' : ''}${app.lang === 'zh' ? '标记已理解' : app.lang === 'en' ? 'Mark understood' : 'Als verstanden markieren'}</button>
+        </div>
+      `;
+      panels.appendChild(section);
+    });
+
+    panels.querySelectorAll('[data-course-done]').forEach(btn => {
+      btn.onclick = () => markCourseDone(Number(btn.dataset.courseDone));
+    });
+  }
+
+  function renderFlow() {
+    const copy = t();
+    document.getElementById('mapLabel').textContent = copy.mapLabel;
+    document.getElementById('mapTitle').textContent = copy.mapTitle;
+    document.getElementById('mapIntro').textContent = copy.mapIntro;
+    document.getElementById('scenarioLabel').textContent = copy.scenarioLabel;
+    document.getElementById('scenarioTitle').textContent = copy.scenarioTitle;
+    document.getElementById('scenarioText').textContent = copy.scenarioText;
+    document.getElementById('relationshipLabel').textContent = copy.relationshipLabel;
+    document.getElementById('relationshipList').innerHTML = copy.relationshipList.map(item => `<div>${item}</div>`).join('');
+
+    const row = document.getElementById('flowRow');
+    row.innerHTML = '';
+    modules.forEach((mod, index) => {
+      const item = copy.flow[mod.id];
+      const step = document.createElement('div');
+      step.className = `flow-step ${mod.color} ${app.currentModule === mod.id ? 'active' : ''}`;
+      step.innerHTML = `
+        <div class="flow-box">
+          <div class="card-label mono">${item[0]}</div>
+          <h3>${item[1]}</h3>
+          <p>${item[2]}</p>
+        </div>
+      `;
+      step.onclick = () => {
+        app.currentModule = mod.id;
+        renderFlow();
+      };
+      row.appendChild(step);
+      if (index < modules.length - 1) {
+        const arrow = document.createElement('div');
+        arrow.className = 'flow-arrow';
+        arrow.textContent = '→';
+        row.appendChild(arrow);
+      }
+    });
+
+    const details = document.getElementById('moduleDetails');
+    details.innerHTML = '';
+    modules.forEach(mod => {
+      const detail = copy.moduleDetails[mod.id];
+      const el = document.createElement('div');
+      el.className = `module-detail ${app.currentModule === mod.id ? 'active' : ''}`;
+      el.innerHTML = `
+        <div class="detail-head">
+          <div>
+            <div class="detail-title">${detail.title}</div>
+            <p style="color:var(--text-dim); margin-top:0.45rem;">${detail.summary}</p>
+          </div>
+          <div class="tag-row">${detail.tags.map(tag => `<span class="tag ${mod.color} mono">${tag}</span>`).join('')}</div>
+        </div>
+        <div class="detail-grid">
+          <div class="content-card" style="padding:1rem;">
+            <div class="card-label mono">${detail.leftTitle}</div>
+            <div class="list">${detail.leftList.map(item => `<div>${item}</div>`).join('')}</div>
+          </div>
+          <div class="content-card" style="padding:1rem;">
+            <div class="card-label mono">${detail.rightTitle}</div>
+            <div class="micro-tags">${detail.tcodes.map(code => `<span class="tcode-tag mono" title="${detail.summary}">${code}</span>`).join('')}</div>
+          </div>
+        </div>
+      `;
+      details.appendChild(el);
+    });
+  }
+
+  function renderTable() {
+    const copy = t();
+    document.getElementById('dataLabel').textContent = copy.dataLabel;
+    document.getElementById('dataTitle').textContent = copy.dataTitle;
+    document.getElementById('dataIntro').textContent = copy.dataIntro;
+    document.getElementById('thAction').textContent = copy.tableHeaders[0];
+    document.getElementById('thObject').textContent = copy.tableHeaders[1];
+    document.getElementById('thModules').textContent = copy.tableHeaders[2];
+    document.getElementById('thWhat').textContent = copy.tableHeaders[3];
+    document.getElementById('dataFlowBody').innerHTML = copy.dataRows.map(row => `
+      <tr>
+        <td>${row[0]}</td>
+        <td>${row[1]}</td>
+        <td>${row[2].map(mod => `<span class="tag ${mod} mono">${mod.toUpperCase()}</span>`).join(' ')}</td>
+        <td>${row[3]}</td>
+      </tr>
+    `).join('');
+  }
+
+  function renderSimulator() {
+    const copy = t();
+    document.getElementById('simLabel').textContent = copy.simLabel;
+    document.getElementById('simTitle').textContent = copy.simTitle;
+    document.getElementById('simIntro').textContent = copy.simIntro;
+    document.getElementById('simSafetyBadge').textContent = copy.simSafetyBadge;
+    document.getElementById('sapWindowTitle').textContent = copy.sapWindowTitle;
+    document.getElementById('sapToolbar1').textContent = copy.sapToolbar[0];
+    document.getElementById('sapToolbar2').textContent = copy.sapToolbar[1];
+    document.getElementById('sapToolbar3').textContent = copy.sapToolbar[2];
+    document.getElementById('sapToolbar4').textContent = copy.sapToolbar[3];
+    document.getElementById('sapNavTitle').textContent = copy.sapNavTitle;
+    document.getElementById('sapCommandLabel').textContent = copy.sapCommandLabel;
+    document.getElementById('runSimBtn').textContent = copy.runSim;
+    document.getElementById('simGoalTitle').textContent = copy.simGoalTitle;
+    document.getElementById('simHowTitle').textContent = copy.simHowTitle;
+    document.getElementById('simFilterTitle').textContent = copy.simFilterTitle;
+    document.getElementById('safeTitle1').textContent = copy.safeTitle1;
+    document.getElementById('safeText1').textContent = copy.safeText1;
+    document.getElementById('safeTitle2').textContent = copy.safeTitle2;
+    document.getElementById('safeText2').textContent = copy.safeText2;
+
+    const simTabLabels = copy.simTabs;
+    document.getElementById('simTabs').innerHTML = simScreens.map((sim, index) => `
+      <button class="sim-tab mono ${app.currentSim === sim.id ? 'active' : ''}" data-sim="${sim.id}">${simTabLabels[index]}</button>
+    `).join('');
+    document.querySelectorAll('.sim-tab').forEach(btn => {
+      btn.onclick = () => {
+        app.currentSim = btn.dataset.sim;
+        renderSimulator();
+      };
+    });
+
+    const screen = copy.sims[app.currentSim];
+    document.getElementById('simCommand').value = app.currentSim.toUpperCase();
+    document.getElementById('simGoalText').textContent = screen.goal;
+    document.getElementById('simHowText').textContent = screen.how;
+    document.getElementById('sapTree').innerHTML = screen.tree.map((item, idx) => `<div class="${idx === screen.tree.length - 1 ? 'active' : ''}">${item}</div>`).join('');
+    document.getElementById('simFilters').innerHTML = screen.filters.map(filter => `
+      <div class="sap-panel">
+        <h4>${filter[0]}</h4>
+        <div class="mono">${filter[1]}</div>
+      </div>
+    `).join('');
+    document.getElementById('simTableHead').innerHTML = `<tr>${screen.headers.map(item => `<th>${item}</th>`).join('')}</tr>`;
+    document.getElementById('simTableBody').innerHTML = screen.rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('');
+  }
+
+  function renderCases() {
+    const copy = t();
+    document.getElementById('caseLabel').textContent = copy.caseLabel;
+    document.getElementById('caseTitle').textContent = copy.caseTitle;
+    document.getElementById('caseIntro').textContent = copy.caseIntro;
+    document.getElementById('caseGrid').innerHTML = copy.caseCards.map(card => `
+      <div class="case-card">
+        <div class="card-label mono">STEP ${card[0]}</div>
+        <div class="card-title">${card[1]}</div>
+        <p style="color:var(--text-dim);">${card[2]}</p>
+      </div>
+    `).join('');
+  }
+
+  function ensureAnsweredLength() {
+    const needed = t().questions.length;
+    if (!Array.isArray(app.answered) || app.answered.length !== needed) {
+      app.answered = new Array(needed).fill(false);
+      saveQuizState();
+    }
+  }
+
+  function renderQuiz() {
+    const copy = t();
+    ensureAnsweredLength();
+    document.getElementById('quizLabel').textContent = copy.quizLabel;
+    document.getElementById('quizTitle').textContent = copy.quizTitle;
+    document.getElementById('quizIntro').textContent = copy.quizIntro;
+    document.getElementById('quizPrevBtn').textContent = copy.quizPrev;
+    document.getElementById('quizNextBtn').textContent = app.currentQuestion === copy.questions.length - 1 ? copy.quizDone : copy.quizNext;
+    document.getElementById('quizPrevBtn').disabled = app.currentQuestion === 0;
+    document.getElementById('quizNextBtn').disabled = !app.answered[app.currentQuestion];
+    document.getElementById('quizProgressText').textContent = copy.quizProgress(app.currentQuestion + 1, copy.questions.length);
+    document.getElementById('quizFill').style.width = `${((app.currentQuestion + 1) / copy.questions.length) * 100}%`;
+
+    const q = copy.questions[app.currentQuestion];
+    const selected = typeof app.answered[app.currentQuestion] === 'number' ? app.answered[app.currentQuestion] : null;
+    const isDone = selected !== null && selected !== false;
+    document.getElementById('quizBody').innerHTML = `
+      <div class="quiz-question">${q.q}</div>
+      <div class="quiz-context">${q.context}</div>
+      <div class="quiz-options">
+        ${q.options.map((opt, idx) => {
+          let cls = 'quiz-option';
+          if (isDone && idx === q.correct) cls += ' correct';
+          if (isDone && idx === selected && idx !== q.correct) cls += ' wrong';
+          return `<button class="${cls}" data-answer="${idx}" ${isDone ? 'disabled' : ''}>${opt}</button>`;
+        }).join('')}
+      </div>
+      <div class="quiz-feedback ${isDone ? 'show' : ''}" id="quizFeedback">${isDone ? (selected === q.correct ? q.correctText : q.wrongText) : ''}</div>
+    `;
+
+    document.querySelectorAll('[data-answer]').forEach(btn => {
+      btn.onclick = () => answerQuestion(Number(btn.dataset.answer));
+    });
+  }
+
+  function answerQuestion(idx) {
+    const q = t().questions[app.currentQuestion];
+    app.answered[app.currentQuestion] = idx;
+    saveQuizState();
+    renderQuiz();
+    const fb = document.getElementById('quizFeedback');
+    fb.textContent = idx === q.correct ? q.correctText : q.wrongText;
+  }
+
+  function renderFooter() {
+    const copy = t();
+    document.getElementById('footerLeft').textContent = copy.footerLeft;
+    document.getElementById('footerRight').textContent = copy.footerRight;
+  }
+
+  function renderAll() {
+    renderHero();
+    renderRoadmap();
+    renderFlow();
+    renderTable();
+    renderSimulator();
+    renderCases();
+    renderQuiz();
+    renderFocus();
+    renderFooter();
+    enhanceGlossary(document.querySelector('.hero'));
+    enhanceGlossary(document.querySelector('main'));
+    if (app.activeGlossaryId) openGlossary(app.activeGlossaryId);
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      app.lang = btn.dataset.lang;
+      localStorage.setItem('sapOfflineLang', app.lang);
+      app.currentQuestion = 0;
+      renderAll();
+    });
+  });
+
+  document.getElementById('jumpRoadmapBtn').onclick = () => document.getElementById('roadmapSection').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('jumpSimulatorBtn').onclick = () => document.getElementById('simulatorSection').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('resetProgressBtn').onclick = resetProgress;
+  document.getElementById('runSimBtn').onclick = renderSimulator;
+  document.getElementById('glossaryCloseBtn').onclick = closeGlossary;
+  document.getElementById('quizPrevBtn').onclick = () => {
+    if (app.currentQuestion > 0) {
+      app.currentQuestion--;
+      renderQuiz();
+    }
+  };
+  document.getElementById('quizNextBtn').onclick = () => {
+    if (app.currentQuestion < t().questions.length - 1) {
+      app.currentQuestion++;
+      renderQuiz();
+    }
+  };
+
+  window.addEventListener('scroll', () => {
+    const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    document.getElementById('progressBar').style.width = `${height ? (winScroll / height) * 100 : 0}%`;
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('main section').forEach(section => observer.observe(section));
+
+  document.addEventListener('click', event => {
+    const term = event.target.closest('.glossary-term');
+    if (term) {
+      openGlossary(term.dataset.glossaryId);
+      return;
+    }
+    const card = event.target.closest('#glossaryCard');
+    if (!card && !event.target.closest('.glossary-term')) {
+      const clickedLink = event.target.closest('a');
+      if (!clickedLink) closeGlossary();
+    }
+  });
+
+  renderAll();
+</script>
+</body>
+</html>
