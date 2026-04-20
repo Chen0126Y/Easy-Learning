@@ -2971,6 +2971,28 @@
   });
 
   renderAll();
+  // ✅ Handle deep link to module (#module-mm, #module-scm, etc.)
+window.addEventListener('load', () => {
+  const hash = window.location.hash;
+
+  if (hash && hash.startsWith('#module-')) {
+    const moduleId = hash.replace('#module-', '');
+
+    // 1️⃣ 切换到对应模块
+    if (['mm', 'scm', 'fi', 'cust'].includes(moduleId)) {
+      app.currentModule = moduleId;
+      renderFlow();
+    }
+
+    // 2️⃣ 等 DOM 更新完成后再滚动
+    requestAnimationFrame(() => {
+      const target = document.getElementById(`module-${moduleId}`);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
+});
 </script>
 </body>
 </html>
