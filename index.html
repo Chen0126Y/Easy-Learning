@@ -2739,6 +2739,7 @@
       const detail = copy.moduleDetails[mod.id];
       const el = document.createElement('div');
       el.className = `module-detail ${app.currentModule === mod.id ? 'active' : ''}`;
+      el.id = `module-${mod.id}`;
       el.innerHTML = `
         <div class="detail-head">
           <div>
