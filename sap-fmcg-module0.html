@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAP Master Data Studio</title>
+<style>
+  :root {
+    --bg: #0c0e11;
+    --surface: #13171d;
+    --surface2: #1a2028;
+    --surface3: #222a35;
+    --border: #2b3442;
+    --text: #edf1f5;
+    --text-dim: #c4ced9;
+    --text-muted: #8d99a8;
+    --accent: #d6a85a;
+    --accent2: #61b6b0;
+    --accent3: #7ab6ff;
+    --danger: #d66b6b;
+    --success: #79be8f;
+    --shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+    --owner-bg: #f3efe7;
+    --owner-surface: rgba(255, 255, 255, 0.92);
+    --owner-border: rgba(20, 42, 67, 0.12);
+    --owner-text: #1f3045;
+    --owner-muted: #64758a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background:
+      radial-gradient(circle at top left, rgba(122, 182, 255, 0.08), transparent 28%),
+      radial-gradient(circle at top right, rgba(214, 168, 90, 0.08), transparent 30%),
+      linear-gradient(180deg, #0a0c0f 0%, #0d1116 100%);
+    color: var(--text);
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.68;
+  }
+
+  button, input, textarea, select { font: inherit; }
+  a { color: inherit; }
+  .hidden { display: none !important; }
+  .mono { font-family: "SFMono-Regular", Consolas, monospace; letter-spacing: 0.03em; }
+
+  .top-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    z-index: 300;
+    transition: width 0.25s ease;
+  }
+
+  .user-app header {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    background: rgba(12, 14, 17, 0.86);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(14px);
+  }
+
+  .header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    color: #d7dee6;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+  }
+
+  .pill, .small-btn, .lang-btn, .jump-btn, .nav-chip, .floating-btn, .ghost-btn, .tab-btn {
+    border: 1px solid var(--border);
+    background: transparent;
+    color: #d0d8e2;
+    transition: 0.18s ease;
+  }
+
+  .pill {
+    padding: 0.42rem 0.72rem;
+    font-size: 0.72rem;
+  }
+
+  .small-btn, .lang-btn, .jump-btn, .ghost-btn, .tab-btn {
+    cursor: pointer;
+  }
+
+  .lang-switcher {
+    display: flex;
+    gap: 0.45rem;
+  }
+
+  .lang-btn {
+    padding: 0.42rem 0.68rem;
+    font-size: 0.74rem;
+  }
+
+  .lang-btn.active,
+  .small-btn:hover,
+  .lang-btn:hover,
+  .jump-btn:hover,
+  .floating-btn:hover,
+  .ghost-btn:hover,
+  .tab-btn:hover,
+  .nav-chip.active {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .hero {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 5rem 2rem 3rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    gap: 1.6rem;
+    align-items: end;
+  }
+
+  .eyebrow {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: clamp(2.6rem, 5.8vw, 4.9rem);
+    line-height: 1.03;
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+  }
+
+  h1 em { font-style: normal; color: var(--accent); }
+
+  .hero-copy {
+    color: var(--text-dim);
+    font-size: 1.03rem;
+    max-width: 760px;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.4rem;
+  }
+
+  .jump-btn {
+    padding: 0.82rem 1rem;
+    text-transform: uppercase;
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+  }
+
+  .jump-btn.primary {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .hero-panel, .content-panel, .gui-shell, .editor-panel, .login-panel, .drawer {
+    background: rgba(19, 23, 29, 0.96);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  .hero-panel {
+    padding: 1.35rem;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .stats-grid, .scenario-grid, .insight-grid, .governance-grid, .notebook-grid, .quiz-grid, .owner-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .stat-card, .scenario-card, .insight-card, .governance-card, .note-card, .quiz-card {
+    padding: 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  .stat-card strong {
+    display: block;
+    font-size: 1.32rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .stat-card span, .helper-copy, .muted, .note-meta {
+    color: var(--text-dim);
+  }
+
+  main section {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 3.4rem 2rem;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #aab5c2;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    margin-bottom: 1.15rem;
+  }
+
+  .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  h2 {
+    font-size: clamp(1.9rem, 3.4vw, 2.75rem);
+    line-height: 1.14;
+    margin-bottom: 0.95rem;
+  }
+
+  .section-copy {
+    max-width: 820px;
+    color: var(--text-dim);
+    margin-bottom: 1.8rem;
+  }
+
+  .nav-chip-row, .micro-tag-row, .toolbar-row, .tab-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .nav-chip, .micro-tag, .field-chip, .status-badge {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.72rem;
+    border: 1px solid var(--border);
+  }
+
+  .nav-chip { cursor: pointer; }
+
+  .master-loop {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 1rem;
+  }
+
+  .loop-visual, .loop-detail, .sim-explainer, .sim-main, .sim-side {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .loop-visual, .loop-detail {
+    padding: 1.3rem;
+  }
+
+  .loop-track {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .loop-step {
+    padding: 1rem 1rem 0.95rem;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    transition: 0.18s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .loop-step.active,
+  .loop-step:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .loop-step::after {
+    content: "";
+    position: absolute;
+    left: -40%;
+    top: 0;
+    width: 35%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(214, 168, 90, 0.14), transparent);
+    animation: sweep 3s infinite;
+  }
+
+  @keyframes sweep {
+    0% { left: -40%; }
+    100% { left: 135%; }
+  }
+
+  .card-label {
+    color: #aab5c2;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    margin-bottom: 0.65rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.55rem;
+  }
+
+  .list {
+    display: grid;
+    gap: 0.45rem;
+    color: var(--text-dim);
+  }
+
+  .list div::before {
+    content: "— ";
+    color: var(--text-muted);
+  }
+
+  .governance-card strong {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: var(--text);
+  }
+
+  .insight-card { cursor: pointer; }
+  .insight-card.active, .insight-card:hover {
+    border-color: var(--accent3);
+    transform: translateY(-2px);
+  }
+
+  .detail-box {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(122, 182, 255, 0.05);
+    border: 1px solid rgba(122, 182, 255, 0.25);
+  }
+
+  .detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.9rem;
+  }
+
+  .ghost-btn {
+    padding: 0.62rem 0.82rem;
+    font-size: 0.76rem;
+  }
+
+  .table-wrap {
+    overflow: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 0.95rem 1rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    color: #b0bcc9;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+  }
+
+  .gui-shell {
+    overflow: hidden;
+    background: #d8dee8;
+    border-color: #8ba0ba;
+  }
+
+  .gui-topbar {
+    background: linear-gradient(180deg, #b3c8e2 0%, #9ab1cb 100%);
+    color: #18304e;
+    padding: 0.5rem 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .gui-menubar, .gui-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    padding: 0.4rem 0.75rem;
+    color: #314862;
+    background: #e6ebf2;
+    border-bottom: 1px solid #b9c6d7;
+  }
+
+  .tool-icon {
+    width: 22px;
+    height: 22px;
+    border: 1px solid #9db0c7;
+    background: linear-gradient(180deg, #fff 0%, #eef3f9 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.74rem;
+    cursor: pointer;
+  }
+
+  .tool-icon:hover, .tool-icon.active {
+    border-color: #5e89bc;
+    background: #fff8dc;
+  }
+
+  .gui-body {
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr);
+    min-height: 720px;
+    color: #24384e;
+    background: #edf2f8;
+  }
+
+  .sim-side {
+    background: #dbe5f1;
+    border-right: 1px solid #b7c5d8;
+    padding: 0.9rem;
+  }
+
+  .sim-side h3, .sim-main h3 {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    color: #54697f;
+    margin-bottom: 0.7rem;
+  }
+
+  .tree-group { margin-bottom: 1rem; }
+
+  .tree-node {
+    padding: 0.45rem 0.5rem;
+    border: 1px solid transparent;
+    background: rgba(255,255,255,0.4);
+    margin-bottom: 0.35rem;
+    cursor: pointer;
+  }
+
+  .tree-node.active, .tree-node:hover {
+    border-color: #7e95b2;
+    background: rgba(255,255,255,0.9);
+  }
+
+  .sim-main {
+    padding: 0.95rem;
+    background: #edf2f8;
+  }
+
+  .command-strip {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr) auto;
+    gap: 0.6rem;
+    align-items: center;
+    margin-bottom: 0.9rem;
+  }
+
+  .sap-input, .sap-select, .owner-input, .owner-textarea {
+    width: 100%;
+    border: 1px solid #98abc2;
+    background: #fff;
+    color: #24384e;
+    padding: 0.55rem 0.65rem;
+  }
+
+  .sap-run {
+    border: 1px solid #6e87a5;
+    background: #f8fbff;
+    color: #22364e;
+    padding: 0.56rem 0.82rem;
+    cursor: pointer;
+  }
+
+  .sim-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .tcode-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .tcode-btn {
+    padding: 0.52rem 0.7rem;
+    border: 1px solid #8aa4c4;
+    background: #f7fbff;
+    color: #24415f;
+    cursor: pointer;
+    font-size: 0.75rem;
+  }
+
+  .tcode-btn.active,
+  .tcode-btn:hover {
+    border-color: #4f79ac;
+    background: #fff3d7;
+    color: #1f3550;
+  }
+
+  .tab-btn {
+    padding: 0.55rem 0.72rem;
+    font-size: 0.76rem;
+    color: #435a75;
+    background: #f2f6fb;
+  }
+
+  .tab-btn.active {
+    border-color: #6f8fb4;
+    background: #ffffff;
+    color: #284361;
+  }
+
+  .sim-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 0.9rem;
+  }
+
+  .sim-panel {
+    background: #fff;
+    border: 1px solid #b7c5d8;
+  }
+
+  .sim-panel-head {
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid #d2dde9;
+    background: #f7f9fc;
+    color: #3f556e;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .sim-panel-body {
+    padding: 0.9rem;
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  .field-card {
+    padding: 0.7rem;
+    border: 1px solid #d4dfeb;
+    background: #fbfdff;
+    cursor: pointer;
+    min-height: 88px;
+  }
+
+  .field-card.active, .field-card:hover {
+    border-color: #7aa0cb;
+    background: #f2f8ff;
+  }
+
+  .field-name {
+    font-size: 0.78rem;
+    color: #5a6f87;
+    margin-bottom: 0.25rem;
+  }
+
+  .field-value {
+    font-weight: 600;
+    color: #1d3148;
+    margin-bottom: 0.3rem;
+  }
+
+  .field-meta {
+    font-size: 0.76rem;
+    color: #556a82;
+  }
+
+  .sim-table-wrap {
+    overflow: auto;
+    border-top: 1px solid #d2dde9;
+  }
+
+  .sim-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #23374c;
+  }
+
+  .sim-table th, .sim-table td {
+    padding: 0.7rem;
+    border-bottom: 1px solid #d9e3ee;
+    font-size: 0.8rem;
+  }
+
+  .sim-table th {
+    background: #f4f7fb;
+    color: #536881;
+  }
+
+  .sim-detail-box {
+    padding: 0.8rem;
+    background: #f6fbff;
+    border: 1px solid #cfdeed;
+    color: #38526d;
+  }
+
+  .statusbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0.8rem;
+    border-top: 1px solid #b9c6d7;
+    background: #d7e1ec;
+    color: #3f5871;
+    font-size: 0.76rem;
+  }
+
+  .notes-wrap {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .note-form {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .dark-input, .dark-textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    padding: 0.78rem 0.85rem;
+  }
+
+  .dark-textarea { min-height: 120px; resize: vertical; }
+
+  .save-btn, .floating-btn {
+    cursor: pointer;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+  }
+
+  .save-btn {
+    padding: 0.76rem 0.95rem;
+  }
+
+  .quiz-card.correct { border-color: rgba(121, 190, 143, 0.6); }
+  .quiz-card.wrong { border-color: rgba(214, 107, 107, 0.7); }
+
+  .quiz-options {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 0.9rem;
+  }
+
+  .quiz-option {
+    width: 100%;
+    text-align: left;
+    padding: 0.85rem 0.95rem;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .quiz-option:hover { border-color: var(--accent); }
+  .quiz-feedback { margin-top: 0.9rem; color: var(--text-dim); }
+
+  .floating-btn {
+    position: fixed;
+    right: 1.3rem;
+    bottom: 1.3rem;
+    z-index: 260;
+    padding: 0.95rem 1.1rem;
+    border-radius: 999px;
+    background: rgba(19, 23, 29, 0.96);
+    box-shadow: var(--shadow);
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.48);
+    z-index: 340;
+    display: none;
+  }
+
+  .overlay.active { display: block; }
+
+  .drawer {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    width: min(460px, calc(100vw - 2rem));
+    z-index: 350;
+    display: none;
+  }
+
+  .drawer.active { display: block; }
+
+  .drawer-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem 1rem 0.7rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .drawer-body {
+    padding: 1rem;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .login-panel {
+    padding: 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  .status-line {
+    min-height: 1.2rem;
+    font-size: 0.82rem;
+    color: var(--accent);
+  }
+
+  .owner-app {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at top left, rgba(39, 88, 141, 0.08), transparent 30%),
+      linear-gradient(180deg, #f4efe5 0%, #efe9df 100%);
+    color: var(--owner-text);
+  }
+
+  .owner-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .owner-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.4rem;
+  }
+
+  .owner-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.04;
+    margin-bottom: 0.4rem;
+  }
+
+  .owner-sub {
+    color: var(--owner-muted);
+    max-width: 740px;
+  }
+
+  .owner-actions {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+
+  .owner-btn {
+    border: 1px solid var(--owner-border);
+    background: var(--owner-surface);
+    color: var(--owner-text);
+    cursor: pointer;
+    padding: 0.72rem 0.88rem;
+    box-shadow: 0 18px 50px rgba(39, 52, 69, 0.08);
+  }
+
+  .owner-btn.primary {
+    border-color: rgba(37, 110, 98, 0.35);
+    color: #256e62;
+  }
+
+  .owner-grid {
+    grid-template-columns: 1.05fr 0.95fr;
+  }
+
+  .editor-panel {
+    background: var(--owner-surface);
+    border-color: var(--owner-border);
+    padding: 1rem;
+    color: var(--owner-text);
+  }
+
+  .owner-input, .owner-textarea {
+    border: 1px solid rgba(38, 59, 84, 0.18);
+    color: var(--owner-text);
+    background: #fff;
+  }
+
+  .owner-textarea {
+    min-height: 110px;
+    resize: vertical;
+  }
+
+  .editor-stack {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .preview-box {
+    padding: 1rem;
+    border: 1px solid rgba(38, 59, 84, 0.12);
+    background: rgba(255, 255, 255, 0.66);
+  }
+
+  .preview-box h4 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  @media (max-width: 1024px) {
+    .hero,
+    .master-loop,
+    .sim-grid,
+    .owner-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .user-app header,
+    .hero,
+    main section,
+    .owner-wrap {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .scenario-grid,
+    .insight-grid,
+    .governance-grid,
+    .stats-grid,
+    .notebook-grid,
+    .quiz-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gui-body {
+      grid-template-columns: 1fr;
+    }
+
+    .field-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="top-progress" id="topProgress"></div>
+
+<div class="user-app" id="userApp">
+  <header>
+    <div class="header-left">
+      <div class="logo mono" id="logoText">SAP Master Data Studio</div>
+      <div class="pill mono" id="offlineBadge">Offline only · Local notes · Demo data</div>
+    </div>
+    <div class="header-right">
+      <div class="lang-switcher">
+        <button class="lang-btn mono active" data-lang="zh">中文</button>
+        <button class="lang-btn mono" data-lang="en">EN</button>
+        <button class="lang-btn mono" data-lang="de">DE</button>
+      </div>
+      <button class="small-btn mono" id="resetNotesBtn" style="padding:0.42rem 0.68rem;"></button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow mono" id="heroEyebrow"></div>
+      <h1 id="heroTitle"></h1>
+      <p class="hero-copy" id="heroCopy"></p>
+      <div class="hero-actions">
+        <button class="jump-btn primary mono" id="jumpGovernanceBtn"></button>
+        <button class="jump-btn mono" id="jumpGuiBtn"></button>
+      </div>
+      <p class="helper-copy" id="heroHint" style="margin-top:1rem;"></p>
+    </div>
+    <div class="hero-panel">
+      <div class="card-label mono" id="heroPanelLabel"></div>
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="content-panel" style="padding:1rem;">
+        <div class="card-label mono" id="heroQueueLabel"></div>
+        <div class="nav-chip-row" id="focusQueue"></div>
+        <p class="helper-copy" id="queueHint" style="margin-top:0.8rem;"></p>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section id="roadmapSection">
+      <div class="section-label mono" id="roadmapLabel"></div>
+      <h2 id="roadmapTitle"></h2>
+      <p class="section-copy" id="roadmapCopy"></p>
+      <div class="scenario-grid">
+        <div class="scenario-card">
+          <div class="card-label mono" id="roadmapLeftLabel"></div>
+          <div class="card-title" id="roadmapLeftTitle"></div>
+          <div class="list" id="roadmapLeftList"></div>
+        </div>
+        <div class="scenario-card">
+          <div class="card-label mono" id="roadmapRightLabel"></div>
+          <div class="card-title" id="roadmapRightTitle"></div>
+          <div class="list" id="roadmapRightList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="governanceSection">
+      <div class="section-label mono" id="govLabel"></div>
+      <h2 id="govTitle"></h2>
+      <p class="section-copy" id="govCopy"></p>
+      <div class="master-loop">
+        <div class="loop-visual">
+          <div class="card-label mono" id="loopLabel"></div>
+          <div class="loop-track" id="loopTrack"></div>
+        </div>
+        <div class="loop-detail">
+          <div class="card-label mono" id="loopDetailLabel"></div>
+          <div class="card-title" id="loopDetailTitle"></div>
+          <p class="muted" id="loopDetailCopy" style="margin-bottom:1rem;"></p>
+          <div class="list" id="loopDetailList"></div>
+          <div class="detail-box">
+            <div class="card-label mono" id="loopScenarioLabel"></div>
+            <p id="loopScenarioCopy"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="domainSection">
+      <div class="section-label mono" id="domainLabel"></div>
+      <h2 id="domainTitle"></h2>
+      <p class="section-copy" id="domainCopy"></p>
+      <div class="insight-grid" id="domainGrid"></div>
+      <div class="detail-box" id="domainDetailBox">
+        <div class="card-label mono" id="domainDetailLabel"></div>
+        <div class="card-title" id="domainDetailTitle"></div>
+        <p class="muted" id="domainDetailCopy" style="margin-bottom:0.9rem;"></p>
+        <div class="list" id="domainDetailList"></div>
+        <div class="detail-actions" id="domainDetailActions"></div>
+      </div>
+    </section>
+
+    <section id="dataStructureSection">
+      <div class="section-label mono" id="structureLabel"></div>
+      <h2 id="structureTitle"></h2>
+      <p class="section-copy" id="structureCopy"></p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th id="thDomain"></th>
+              <th id="thLevel"></th>
+              <th id="thFields"></th>
+              <th id="thRisk"></th>
+            </tr>
+          </thead>
+          <tbody id="structureBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="guiSection">
+      <div class="section-label mono" id="guiLabel"></div>
+      <h2 id="guiTitle"></h2>
+      <p class="section-copy" id="guiCopy"></p>
+      <div class="gui-shell">
+        <div class="gui-topbar">
+          <span id="guiWindowTitle"></span>
+          <span class="mono">SAP GUI 770 · Training Sandbox</span>
+        </div>
+        <div class="gui-menubar" id="guiMenubar"></div>
+        <div class="gui-toolbar" id="guiToolbar"></div>
+        <div class="gui-body">
+          <aside class="sim-side">
+            <h3 id="sideNavTitle"></h3>
+            <div class="tree-group" id="simLauncher"></div>
+            <h3 id="sideStepTitle"></h3>
+            <div class="tree-group" id="simTree"></div>
+          </aside>
+          <div class="sim-main">
+            <div class="command-strip">
+              <label class="mono" for="simCommand" id="commandLabel"></label>
+              <input id="simCommand" class="sap-input mono" readonly>
+              <button class="sap-run mono" id="simRunBtn"></button>
+            </div>
+            <div class="tcode-row" id="tcodeRow"></div>
+            <div class="sim-tabs" id="simTabs"></div>
+            <div class="sim-grid">
+              <div class="sim-panel">
+                <div class="sim-panel-head" id="primaryPanelTitle"></div>
+                <div class="sim-panel-body">
+                  <div class="field-grid" id="fieldGrid"></div>
+                </div>
+                <div class="sim-table-wrap">
+                  <table class="sim-table">
+                    <thead id="simTableHead"></thead>
+                    <tbody id="simTableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="sim-panel">
+                <div class="sim-panel-head" id="secondaryPanelTitle"></div>
+                <div class="sim-panel-body" style="display:grid; gap:0.8rem;">
+                  <div class="sim-detail-box">
+                    <div class="card-label mono" id="fieldInfoLabel"></div>
+                    <div class="card-title" id="fieldInfoTitle"></div>
+                    <p id="fieldInfoCopy" class="muted"></p>
+                  </div>
+                  <div class="sim-detail-box">
+                    <div class="card-label mono" id="tcodeInfoLabel"></div>
+                    <div class="card-title" id="tcodeInfoTitle"></div>
+                    <p id="tcodeInfoCopy" class="muted"></p>
+                  </div>
+                  <div class="sim-detail-box">
+                    <div class="card-label mono" id="simLessonLabel"></div>
+                    <div class="list" id="simLessonList"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="statusbar">
+              <span id="statusLeft"></span>
+              <span id="statusRight" class="mono"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="qualitySection">
+      <div class="section-label mono" id="qualityLabel"></div>
+      <h2 id="qualityTitle"></h2>
+      <p class="section-copy" id="qualityCopy"></p>
+      <div class="governance-grid" id="qualityGrid"></div>
+    </section>
+
+    <section id="notebookSection">
+      <div class="section-label mono" id="notesLabel"></div>
+      <h2 id="notesTitle"></h2>
+      <p class="section-copy" id="notesCopy"></p>
+      <div class="notebook-grid">
+        <div class="content-panel" style="padding:1rem;">
+          <div class="card-label mono" id="noteFormLabel"></div>
+          <div class="note-form">
+            <input class="dark-input" id="noteTitleInput" maxlength="80">
+            <textarea class="dark-textarea" id="noteBodyInput"></textarea>
+            <button class="save-btn mono" id="saveNoteBtn"></button>
+            <div class="status-line" id="noteStatus"></div>
+          </div>
+        </div>
+        <div class="content-panel" style="padding:1rem;">
+          <div class="card-label mono" id="noteListLabel"></div>
+          <div class="notes-wrap" id="noteList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="quizSection">
+      <div class="section-label mono" id="quizLabel"></div>
+      <h2 id="quizTitle"></h2>
+      <p class="section-copy" id="quizCopy"></p>
+      <div class="quiz-grid" id="quizGrid"></div>
+    </section>
+  </main>
+
+  <button class="floating-btn mono" id="openOwnerBtn"></button>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="drawer" id="ownerDrawer">
+    <div class="drawer-head">
+      <div>
+        <div class="card-label mono" id="drawerLabel"></div>
+        <div class="card-title" id="drawerTitle"></div>
+      </div>
+      <button class="small-btn mono" id="closeDrawerBtn" style="padding:0.42rem 0.68rem;">✕</button>
+    </div>
+    <div class="drawer-body">
+      <p class="muted" id="drawerCopy"></p>
+      <div class="login-panel">
+        <div class="note-form">
+          <input class="dark-input mono" id="ownerUserInput" maxlength="40">
+          <input class="dark-input mono" id="ownerPassInput" type="password" maxlength="40">
+          <button class="save-btn mono" id="ownerLoginBtn"></button>
+          <div class="status-line" id="ownerLoginStatus"></div>
+        </div>
+      </div>
+      <div class="content-panel" style="padding:1rem;">
+        <div class="card-label mono" id="sourceLabel"></div>
+        <div class="list" id="sourceList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="owner-app hidden" id="ownerApp">
+  <div class="owner-wrap">
+    <div class="owner-header">
+      <div>
+        <div class="eyebrow mono" id="ownerEyebrow"></div>
+        <div class="owner-title" id="ownerPageTitle"></div>
+        <p class="owner-sub" id="ownerPageCopy"></p>
+      </div>
+      <div class="owner-actions">
+        <button class="owner-btn" id="previewBtn"></button>
+        <button class="owner-btn primary" id="saveOwnerBtn"></button>
+        <button class="owner-btn" id="resetOwnerBtn"></button>
+        <button class="owner-btn" id="exitOwnerBtn"></button>
+      </div>
+    </div>
+
+    <div class="owner-grid">
+      <div class="editor-panel">
+        <div class="card-label mono" id="ownerEditLabel"></div>
+        <div class="editor-stack">
+          <div>
+            <div class="card-label mono" id="ownerHeroLabel"></div>
+            <textarea class="owner-textarea" id="ownerHeroInput"></textarea>
+          </div>
+          <div>
+            <div class="card-label mono" id="ownerScenarioLabel"></div>
+            <textarea class="owner-textarea" id="ownerScenarioInput"></textarea>
+          </div>
+          <div>
+            <div class="card-label mono" id="ownerLoopLabel"></div>
+            <textarea class="owner-textarea" id="ownerLoopInput"></textarea>
+          </div>
+          <div>
+            <div class="card-label mono" id="ownerGuiLabel"></div>
+            <textarea class="owner-textarea" id="ownerGuiInput"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="editor-panel">
+        <div class="card-label mono" id="ownerPreviewLabel"></div>
+        <div class="editor-stack">
+          <div class="preview-box">
+            <h4 id="previewHeroTitle"></h4>
+            <p id="previewHeroCopy"></p>
+          </div>
+          <div class="preview-box">
+            <h4 id="previewScenarioTitle"></h4>
+            <p id="previewScenarioCopy"></p>
+          </div>
+          <div class="preview-box">
+            <h4 id="previewLoopTitle"></h4>
+            <p id="previewLoopCopy"></p>
+          </div>
+          <div class="preview-box">
+            <h4 id="previewGuiTitle"></h4>
+            <p id="previewGuiCopy"></p>
+          </div>
+          <div class="status-line" id="ownerStatus"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const OWNER_USERNAME = 'ccepeu';
+  const OWNER_PASSWORD = 'ccepeu';
+  const OWNER_SESSION_KEY = 'sapMdOwnerSession';
+  const NOTES_KEY = 'sapMdUserNotesV3';
+  const USER_STATE_KEY = 'sapMdUserStateV3';
+  const OWNER_CONTENT_KEY = 'sapMdOwnerContentV3';
+
+  const defaultOwnerContent = () => ({
+    heroExtra: '',
+    scenarioExtra: '',
+    loopExtra: '',
+    guiExtra: ''
+  });
+
+  const app = {
+    lang: localStorage.getItem('sapMdLang') || 'zh',
+    loopIndex: 0,
+    domainIndex: 0,
+    simScreen: 'bp',
+    simTab: 0,
+    simField: 0,
+    notes: JSON.parse(localStorage.getItem(NOTES_KEY) || '[]'),
+    quizAnswers: JSON.parse(localStorage.getItem(USER_STATE_KEY) || '{}').quizAnswers || {},
+    ownerContent: { ...defaultOwnerContent(), ...(JSON.parse(localStorage.getItem(OWNER_CONTENT_KEY) || '{}')) }
+  };
+
+  const copy = {
+    zh: {
+      logo: 'SAP Master Data Studio',
+      offlineBadge: '离线运行 · 本机笔记 · 演示数据',
+      resetNotes: '清空笔记',
+      heroEyebrow: 'Master Data / Governance / SAP GUI Practice',
+      heroTitle: '把 SAP 学成 <em>主数据判断力</em>，而不只是会点 Tcode',
+      heroCopy: '这版页面不再把重点放在广义业务排查，而是更深入服务 data 和 master data 团队。你会围绕 Business Partner、material master、组织级别数据、治理流程、重复与完整性风险去理解 SAP，重点练的是“这条数据该由谁维护、在哪个层级生效、为什么会把下游流程卡住”。',
+      heroHint: '下面的 GUI 训练区尽量模拟真实 SAP 使用感。你可以切屏、点字段、看工作流、跳不同视图，不再只是静态截图。',
+      heroPanelLabel: '你现在要建立的能力',
+      heroQueueLabel: '最值得先抓住的词',
+      queueHint: '这些焦点和页面内容一起往下走，适合给 master data 新人先建立判断骨架。',
+      openOwner: '本机编辑',
+      drawerLabel: 'Local Editor',
+      drawerTitle: '进入本机后台',
+      drawerCopy: '用户前台和 owner 后台现在分开了。前台保持学习视角；后台登录成功后，会进入单独的 owner workspace。',
+      ownerUserPlaceholder: '用户名',
+      ownerPassPlaceholder: '密码',
+      ownerLogin: '进入后台',
+      ownerLoginFail: '用户名或密码不正确。',
+      sourceLabel: '本页内容锚点',
+      sourceList: [
+        'SAP Training: MDG100 - SAP Master Data Governance on SAP S/4HANA',
+        'SAP Training: IRT310 - Maintain Master Data in SAP S/4HANA Retail',
+        'SAP Training: S4550 - Cross-Functional Customizing in SAP S/4HANA Materials Management',
+        'SAP Help: Business Partner Master Data / Material Master Record'
+      ],
+      roadmapLabel: '01 — 重新定焦',
+      roadmapTitle: '先把 master data 团队最常面对的 4 类判断分开',
+      roadmapCopy: '对主数据成员来说，真正高频的问题不是“这个订单去哪看”，而是“这条主数据属于哪个对象、哪个组织层级、哪个 owner、哪个治理动作”。先把这四类判断分开，后面看 GUI 才不会乱。',
+      roadmapLeftLabel: '你该先学会区分什么',
+      roadmapLeftTitle: '不是所有问题都叫主数据问题',
+      roadmapLeftList: [
+        '对象判断：是 BP、material、site / plant、还是定价与财务参考数据。',
+        '层级判断：是 general data、company code、sales area、plant，还是 purchasing org。',
+        '责任判断：是 data steward、业务 owner、共享服务，还是 MDG workflow approver。',
+        '动作判断：是 create、change、extend、block、archive，还是 deduplicate。'
+      ],
+      roadmapRightLabel: '你最后要能做到什么',
+      roadmapRightTitle: '像 data owner 一样说清风险',
+      roadmapRightList: [
+        '看到 billing 卡住时，先判断是 BP 销售视图缺字段，还是 tax / payer 关系不完整。',
+        '看到补货异常时，先问 material master 的 MRP / UoM / plant 扩展是否到位。',
+        '看到重复客户时，先问是 search term / VAT / naming 规则失控，还是创建入口失控。',
+        '看到流程慢时，先判断是 workflow 过长、质量规则不清，还是字段责任边界不清。'
+      ],
+      govLabel: '02 — 治理闭环',
+      govTitle: '主数据不是一张表，它是一条被治理的闭环',
+      govCopy: '下面这条闭环专门站在 master data / MDG 视角看。每一步都不是业务本身，而是“主数据怎样被提出、校验、审批、发布，然后影响下游”。',
+      loopLabel: '治理步骤',
+      loopDetailLabel: '当前步骤',
+      loopScenarioLabel: '在 FMCG 欧洲场景里会怎么出现',
+      domainLabel: '03 — 重点对象',
+      domainTitle: '对 FMCG master data 团队来说，真正该深挖的是这些对象',
+      domainCopy: '点击卡片查看典型字段、常见风险、以及它会卡住哪条下游链路。这里不再泛泛讲模块，而是把主数据对象当核心。',
+      domainDetailLabel: '对象拆解',
+      domainJump: '跳到对应 GUI',
+      domainSave: '加入我的关注队列',
+      structureLabel: '04 — 层级与字段',
+      structureTitle: '同一条主数据，不同层级决定不同后果',
+      structureCopy: 'SAP 里很多“看似都在 BP / material 里”的字段，其实按不同组织层级生效。对 master data 来说，层级错了比值错了更难发现。',
+      thDomain: '主数据域',
+      thLevel: '生效层级',
+      thFields: '代表字段',
+      thRisk: '典型后果',
+      guiLabel: '05 — SAP GUI 训练台',
+      guiTitle: '把它做成更像真的：可切屏、可点字段、可看工作流',
+      guiCopy: '这里不只是“展示界面长什么样”，而是模拟 master data 团队更真实的操作节奏：在 BP、MM03/物料主数据、MDG 变更请求收件箱之间切换，看字段、看规则、看状态、看为什么会被卡。上方的 Tcode 按钮都可以直接点。',
+      guiWindowTitle: 'SAP Easy Access - Master Data Sandbox',
+      guiMenubar: ['System', 'Edit', 'Favorites', 'Environment', 'Help'],
+      guiToolbar: ['◀', '▶', '✓', '⊕', '⌕', '⎙', '⚙', 'i'],
+      sideNavTitle: 'Launcher',
+      sideStepTitle: 'Screen Map',
+      commandLabel: 'Tcode',
+      run: 'Open',
+      tcodeHint: '可点 Tcode',
+      primaryPanelTitle: 'Screen Content',
+      secondaryPanelTitle: 'Field & Governance Meaning',
+      fieldInfoLabel: '字段为什么重要',
+      tcodeInfoLabel: '这支 Tcode / App 在干嘛',
+      simLessonLabel: '你该从这个画面学什么',
+      statusLeft: 'Display only · simulated clicks · local training data',
+      qualityLabel: '06 — 数据质量风险',
+      qualityTitle: 'master data 团队最常见的，不是不会建数据，而是建完以后埋雷',
+      qualityCopy: '下面这些不是抽象风险，而是最容易在 FMCG 欧洲组织里真实发生的主数据治理问题。',
+      notesLabel: '07 — 学习笔记',
+      notesTitle: '把规则、疑问和例外记录下来',
+      notesCopy: '很多主数据工作不是一次性记住，而是边看边形成自己的字段判断清单。这里的笔记只保存在本机。',
+      noteFormLabel: '新建笔记',
+      noteListLabel: '本机记录',
+      noteTitlePlaceholder: '例如：payer partner function 缺失时谁来补？',
+      noteBodyPlaceholder: '写下字段、风险、owner、你想追问的问题……',
+      saveNote: '保存笔记',
+      noteSaved: '笔记已保存。',
+      noteEmpty: '还没有笔记。遇到字段、层级或责任不清时，先记在这里。',
+      noteDelete: '删除',
+      quizLabel: '08 — 判断练习',
+      quizTitle: '现在更像 master data 成员地回答问题',
+      quizCopy: '这些题不考你记住哪个模块，而是考你先判断对象、层级、owner 和治理动作。',
+      quizCorrect: '回答正确。你的重点判断到位了。',
+      quizWrong: '这题更应该先从主数据对象和层级判断切入。',
+      ownerEyebrow: 'Owner Workspace / Local Only',
+      ownerPageTitle: '本机后台：单独维护用户前台看到的内容',
+      ownerPageCopy: '这个后台和用户学习页分开。你可以在这里补充前台文案重点，不需要把 owner 功能塞进用户阅读动线里。',
+      previewBtn: '打开前台预览',
+      saveOwner: '保存本机改动',
+      resetOwner: '恢复默认',
+      exitOwner: '退出后台',
+      ownerEditLabel: '本机可编辑项',
+      ownerPreviewLabel: '改动预览',
+      ownerHeroLabel: 'Hero 补充',
+      ownerScenarioLabel2: '治理场景补充',
+      ownerLoopLabel: '闭环讲解补充',
+      ownerGuiLabel: 'GUI 讲解补充',
+      ownerSaved: '本机后台内容已保存。',
+      ownerResetDone: '本机后台内容已恢复默认。',
+      previewHeroTitle: 'Hero 补充预览',
+      previewScenarioTitle: '治理场景补充预览',
+      previewLoopTitle: '闭环讲解补充预览',
+      previewGuiTitle: 'GUI 讲解补充预览'
+    }
+  };
+
+  const content = {
+    zh: {
+      stats: [
+        ['03', '核心主数据对象深挖'],
+        ['04', '组织层级生效逻辑'],
+        ['03', '可点击 SAP GUI 训练屏'],
+        ['100%', '本机演示，不连公司系统']
+      ],
+      focusTerms: ['Business Partner', 'Material Master', 'Sales Area', 'Plant Extension', 'Duplicate Check', 'Workflow'],
+      loops: [
+        {
+          title: '需求提出',
+          copy: '业务不是说“帮我建个客户”就结束了。master data 团队第一步要把请求翻译成对象、动作和下游影响。',
+          bullets: ['先区分 create / extend / change / block', '先要到 legal name、VAT、sales area、plant 等主键', '明确这条数据将影响 order-to-cash 还是 procure-to-pay'],
+          scenario: '法国新客户要在 EU10 销售组织开票，不是简单建 BP，而是要一起判断 payer、税务、销售区域和信用相关字段。'
+        },
+        {
+          title: '质量校验',
+          copy: '真正减少返工的关键在这一步。重复、缺字段、命名不统一、单位换算不一致，通常都在这里被拦住或被漏掉。',
+          bullets: ['做 duplicate search', '检查 mandatory fields 和 reference rules', '看本地法规字段和欧洲共享字段是否冲突'],
+          scenario: '同一个客户可能既叫 Carrefour France，也叫 Carrefour FR SAS；如果 search term 和 VAT 规则没控住，重复就会出现。'
+        },
+        {
+          title: '审批治理',
+          copy: 'MDG 不是为了多一个审批，而是为了把字段责任拆清楚。哪个字段由财务、销售、采购或 tax owner 签字，决定了数据可信度。',
+          bullets: ['按 domain routing 到不同 approver', '把字段责任写清，不让每次都靠口头确认', '拒绝理由要回到字段，不要写“信息不全”这种空话'],
+          scenario: 'BP 已经有 general data，但 sales area 扩展需要销售 owner 批，company code 视图需要 finance owner 批。'
+        },
+        {
+          title: '发布与下游影响',
+          copy: '发布之后才是真正的业务开始。主数据有没有把 order、MRP、billing、pricing、AR 带起来，是 data 团队必须跟踪的结果。',
+          bullets: ['确认 replication / activation 是否完成', '看下游是否仍然报 incompletion', '把失败回因到字段、规则或 owner'],
+          scenario: 'material 在总部已经存在，但 plant extension 没到 EU10，结果 MRP 看不到、采购看不到、补货照样卡。'
+        }
+      ],
+      domains: [
+        {
+          title: 'BP / Customer-Supplier Master',
+          copy: '这是最常牵动财务、销售、采购和税务的对象。',
+          details: [
+            'General data: legal name、address、search term、VAT / tax id。',
+            'Company code data: reconciliation、payment terms、dunning。',
+            'Sales area data: sales office、shipping、pricing、partner functions。',
+            '治理重点：重复客户、payer 不完整、销售视图漏扩展。'
+          ],
+          action: 'bp'
+        },
+        {
+          title: 'Material Master / Article',
+          copy: '对 FMCG 来说，物料主数据往往是 supply、pricing 和 execution 的交汇点。',
+          details: [
+            'Basic data: description、base UoM、EAN / GTIN、weight / volume。',
+            'Plant data: MRP type、safety stock、procurement type、storage。',
+            'Sales data: delivering plant、sales unit、minimum order quantity。',
+            '治理重点：单位换算错、plant extension 漏、MRP 参数混乱。'
+          ],
+          action: 'mm'
+        },
+        {
+          title: 'Reference & Org Data',
+          copy: '很多团队以为自己在维护主数据，实际是在被组织层级和 reference data 反向控制。',
+          details: [
+            'Plant、storage location、sales org、distribution channel 不是背景信息，而是生效边界。',
+            'Currency、UoM、country / region、calendar 这些 reference data 决定规则能否跑通。',
+            '主数据对象错不一定来自对象本身，也可能来自组织级别没铺齐。'
+          ],
+          action: 'mdg'
+        }
+      ],
+      structureRows: [
+        ['BP', 'General Data', 'Legal name, address, VAT ID, search term', '重复客户、税务识别失败、基础搜索失效'],
+        ['BP', 'Company Code', 'Reconciliation account, payment terms, dunning', '能创建客户但不能正常挂 AR 或催收'],
+        ['BP', 'Sales Area', 'Incoterms, shipping, partner functions, pricing group', '订单能建但交付或开票卡住'],
+        ['Material', 'Basic Data', 'Base UoM, GTIN, net weight, hierarchy', '跨系统口径不一致，报表与执行对不上'],
+        ['Material', 'Plant', 'MRP type, lot size, procurement type, safety stock', '某工厂看不到物料、MRP 不计划、补货异常'],
+        ['Material', 'Sales Org / Plant Sales', 'Delivering plant, sales unit, loading group', '可卖不可交、ATP 异常、销售单位错'],
+        ['Reference', 'Cross-System', 'Country, region, tax, currency, UoM', '规则表面没错，结果在本地国家场景失效']
+      ],
+      quality: [
+        ['重复客户不是“清一下就好”', '根因通常是 search term、VAT、legal name 标准和创建入口控制同时失守。'],
+        ['字段完整不等于治理完成', '很多请求把 mandatory fields 填满了，但责任字段没有 owner，也没有解释为什么这样填。'],
+        ['extend 比 create 更容易漏', '老对象扩到新 plant、新 sales area 或新 company code 时，最容易误以为“已有主数据就够了”。'],
+        ['workflow 慢常常不是系统慢', '更多时候是 approver 角色不清、拒绝理由太泛、或者校验规则在前后环节重复。']
+      ],
+      quizzes: [
+        {
+          q: '法国客户可以在 BP 里查到 general data，但 EU10 销售组织还是无法正常开票。你最该先判断什么？',
+          options: [
+            '先看 sales area 扩展和 partner / tax 相关字段是否完整',
+            '先去看库存批次',
+            '先问仓库为什么还没发货',
+            '先看利润表'
+          ],
+          correct: 0
+        },
+        {
+          q: '某物料总部已存在，但 EU10 plant 看不到它参与 MRP。作为 master data 成员你第一步该怎么想？',
+          options: [
+            '这更像 plant extension 或 plant-level material view 未完成',
+            '直接认为采购没下单',
+            '先看应收账款',
+            '说明销售团队建错订单'
+          ],
+          correct: 0
+        },
+        {
+          q: '同一个客户被建成两个 BP，名称略有不同，但 VAT 相同。你最该把问题归到哪里？',
+          options: [
+            'duplicate check 规则、search strategy 和创建治理入口',
+            'MRP 类型设置',
+            '库存地点配置',
+            '财务凭证过账错误'
+          ],
+          correct: 0
+        }
+      ],
+      sims: {
+        bp: {
+          code: 'BP',
+          menu: 'Master Data / Business Partner',
+          title: 'Maintain Business Partner',
+          tree: ['Search Existing BP', 'General Data', 'Roles', 'Company Code', 'Sales Area', 'Relationships'],
+          tcodeInfo: '官方帮助把 Business Partner 作为 central master record，general data 可跨公司代码、销售区域和采购组织复用；company code / sales area 数据则决定下游财务和销售能否真正跑通。',
+          lessons: [
+            '不要把 general data 完整误认为客户就可交易。',
+            'company code 和 sales area 才是“能不能挂账、能不能卖、能不能开票”的关键。',
+            'partner function 和税务字段是最典型的下游卡点。'
+          ],
+          tabs: [
+            {
+              name: 'General Data',
+              fields: [
+                { name: 'Business Partner', value: 'BP-EU-CUST-2048', meta: '主键 / 唯一识别', explain: '这是 central object ID，后续所有扩展都围绕它。' },
+                { name: 'Legal Name', value: 'Carrefour France SAS', meta: '法定名称', explain: '命名不统一会直接放大重复检查难度。' },
+                { name: 'VAT ID', value: 'FRA-99871245', meta: '税务识别', explain: '在欧洲跨国客户治理里，VAT 常是去重和税务校验的硬锚点。' },
+                { name: 'Search Term', value: 'CARREFOUR FR', meta: '搜索策略', explain: 'search term 决定日常搜索与近似匹配效果。' },
+                { name: 'Country / Region', value: 'FR / Ile-de-France', meta: '地理规范', explain: '国家和地区不仅是地址字段，还会影响 tax 与 local rule。' },
+                { name: 'Address Status', value: 'Complete', meta: '完整性结果', explain: '地址不完整时，后续 shipping、invoice 甚至法规报送都会被影响。' }
+              ],
+              table: {
+                head: ['Field Group', 'Status', 'Owner', 'Impact'],
+                rows: [
+                  ['Identity', 'Ready', 'Data Steward', 'Search / duplicate control'],
+                  ['Address', 'Ready', 'Shared Service', 'Shipping / tax document'],
+                  ['Tax', 'Review', 'Tax Owner', 'Billing / compliance']
+                ]
+              }
+            },
+            {
+              name: 'Sales Area',
+              fields: [
+                { name: 'Sales Org', value: 'EU10', meta: '销售组织', explain: '如果对象没扩到正确 sales org，下游 order-to-cash 还是起不来。' },
+                { name: 'Distr. Channel', value: 'MT', meta: 'Modern Trade', explain: '不同分销渠道可能带不同 pricing 和 text rule。' },
+                { name: 'Incoterms', value: 'DAP Paris', meta: '交付条款', explain: '这类字段看似业务字段，但对交付与责任边界非常关键。' },
+                { name: 'Pricing Group', value: 'RETAIL-A', meta: '定价分组', explain: 'pricing group 错误时，开单和开票常不是立刻报错，而是价格结果失真。' },
+                { name: 'Payer Function', value: 'Assigned', meta: 'Partner Function', explain: 'payer 缺失是 billing / AR 卡住的高频原因。' },
+                { name: 'Incompletion', value: 'Tax Contact Missing', meta: '未完成日志', explain: '这类日志比“字段空了”更重要，因为它直接告诉你下游为什么过不去。' }
+              ],
+              table: {
+                head: ['Check', 'Result', 'Rule', 'Next Action'],
+                rows: [
+                  ['Sales area extension', 'OK', 'EU10-MT active', 'Proceed'],
+                  ['Payer', 'OK', 'Mandatory partner function', 'Proceed'],
+                  ['Tax contact', 'Missing', 'France billing rule', 'Request completion']
+                ]
+              }
+            }
+          ]
+        },
+        mm: {
+          code: 'MM03',
+          menu: 'Material Master / Display Material',
+          title: 'Display Material Master',
+          tree: ['Basic Data', 'Sales View', 'Purchasing', 'MRP 1', 'MRP 2', 'Accounting'],
+          tcodeInfo: 'SAP Help 把 material master 描述为一个跨部门单一记录：basic data 可跨组织共享，sales 与 plant 数据则在不同销售组织、工厂或存储场景生效。对 master data 团队来说，“对象存在”和“对象已在正确层级生效”是两回事。',
+          lessons: [
+            'base UoM、sales UoM、case / bottle conversion 是 FMCG 高风险点。',
+            'plant view 决定 MRP、procurement、storage 等下游逻辑。',
+            'material 不只服务 supply，也影响 pricing、shipping 和 reporting。'
+          ],
+          tabs: [
+            {
+              name: 'Basic Data 1',
+              fields: [
+                { name: 'Material', value: 'FG-COLA-01', meta: '成品 SKU', explain: 'material number 是整个 supply 与 finance 口径的共同锚点。' },
+                { name: 'Description', value: 'CCEP Regular Cola 24x330ml', meta: '统一描述', explain: '描述不只是显示文本，还是搜索、接口与主数据清洗的重要辅助。' },
+                { name: 'Base UoM', value: 'CS', meta: 'Case', explain: 'base UoM 决定很多数量计算基础；改错影响极大。' },
+                { name: 'EAN / GTIN', value: '05412345678904', meta: '识别码', explain: '零售和外部协同高度依赖 GTIN。' },
+                { name: 'Net Weight', value: '8.25 KG', meta: '物流属性', explain: '重量、体积、包装层级会影响运输和仓储。' },
+                { name: 'Product Hierarchy', value: 'BEV/CSD/COLA', meta: '层级分类', explain: '层级既影响报表，也影响 pricing / assortment 规则。' }
+              ],
+              table: {
+                head: ['Check Point', 'Result', 'Risk if Wrong', 'Owner'],
+                rows: [
+                  ['Base UoM', 'Ready', 'Quantity conversion failure', 'Material Steward'],
+                  ['GTIN', 'Ready', 'Retail sync mismatch', 'Data Operations'],
+                  ['Hierarchy', 'Review', 'Wrong analytics / pricing grouping', 'Commercial Data']
+                ]
+              }
+            },
+            {
+              name: 'MRP / Plant',
+              fields: [
+                { name: 'Plant', value: 'EU10', meta: '工厂层级', explain: 'material 在 plant 层级是否扩展，决定这家工厂能否使用这条物料。' },
+                { name: 'MRP Type', value: 'PD', meta: 'Planning', explain: 'MRP type 决定计划方式，不是供应链团队才需要懂的字段。' },
+                { name: 'Procurement Type', value: 'F', meta: 'External', explain: 'procurement type 会直接改变补货逻辑与 source determination。' },
+                { name: 'Safety Stock', value: '1,200 CS', meta: '库存策略', explain: '错误 safety stock 会造成计划口径失真。' },
+                { name: 'Planned Delivery Time', value: '7 Days', meta: 'Lead time', explain: 'lead time 错时，计划结果会系统性偏差。' },
+                { name: 'Storage Condition', value: 'Ambient', meta: '仓储属性', explain: '仓储条件常被低估，但对执行和合规都关键。' }
+              ],
+              table: {
+                head: ['Plant Rule', 'Status', 'Reason', 'Action'],
+                rows: [
+                  ['Plant extension', 'Active', 'EU10 view exists', 'Proceed'],
+                  ['MRP fields', 'Review', 'Safety stock older than 180 days', 'Validate with planner'],
+                  ['Lead time', 'Mismatch', 'Supplier SLA changed', 'Update with owner']
+                ]
+              }
+            }
+          ]
+        },
+        mdg: {
+          code: 'NWBC / MDG',
+          menu: 'Master Data Governance / Change Requests',
+          title: 'MDG Change Request Inbox',
+          tree: ['My Inbox', 'Open CRs', 'Rule Results', 'Approvals', 'Activation Log'],
+          tcodeInfo: 'SAP Training 的 MDG100 明确把核心放在 domain governance、mass processing、data quality management 和 workflow。对 master data 团队来说，MDG 不是另一个“建数据界面”，而是把质量、责任和审批显式化的治理层。',
+          lessons: [
+            '看 CR 不只是看状态，而是看为什么被打回。',
+            '规则命中说明治理逻辑存在，不等于规则设计合理。',
+            'activation success 才代表主数据真正进入下游可用状态。'
+          ],
+          tabs: [
+            {
+              name: 'Inbox',
+              fields: [
+                { name: 'CR Number', value: 'CR-2026-0482', meta: '变更请求主键', explain: '这是治理动作的锚点，不是业务对象主键。' },
+                { name: 'Domain', value: 'Business Partner', meta: '治理域', explain: 'domain 决定后续 routing、rule set 和 approver。' },
+                { name: 'Action', value: 'Extend Sales Area', meta: '治理动作', explain: 'create、change、extend、block 的处理逻辑完全不同。' },
+                { name: 'Current Step', value: 'Tax Review', meta: '审批位置', explain: '真正拖慢流程的往往是步骤设计或角色边界，而不是系统。' },
+                { name: 'SLA Clock', value: '18h remaining', meta: '治理时效', explain: 'data governance 也需要可运营的 SLA 视角。' },
+                { name: 'Activation', value: 'Pending', meta: '发布状态', explain: '审批通过不等于数据已被系统激活或复制。' }
+              ],
+              table: {
+                head: ['Rule ID', 'Result', 'Meaning', 'Resolution'],
+                rows: [
+                  ['BP_DUP_021', 'Pass', 'No duplicate VAT match', 'No action'],
+                  ['BP_TAX_FR_008', 'Fail', 'France tax contact missing', 'Complete tax contact'],
+                  ['BP_ROLE_014', 'Pass', 'Customer roles complete', 'No action']
+                ]
+              }
+            },
+            {
+              name: 'Approval Trail',
+              fields: [
+                { name: 'Requester', value: 'EU Sales Operations', meta: '需求来源', explain: '需求来源可帮助判断字段解释是否来自真正 owner。' },
+                { name: 'Data Steward', value: 'MDM Shared Service', meta: '执行人', explain: 'steward 负责整理数据，不一定负责商业决策。' },
+                { name: 'Approver 1', value: 'Finance Owner', meta: '公司代码视图', explain: '只要涉及 AR / reconciliation，就不应跳过 finance owner。' },
+                { name: 'Approver 2', value: 'Tax Lead FR', meta: '本地税务', explain: '本地国家规则经常是欧洲共享治理里最复杂的部分。' },
+                { name: 'Comment', value: 'Need tax contact + billing email', meta: '打回理由', explain: '高质量的拒绝理由应指向字段和规则，不该只是“信息不足”。' },
+                { name: 'Activation Log', value: 'Waiting after approval', meta: '最终生效', explain: 'approval trail 完整但 activation 失败，业务还是用不了。' }
+              ],
+              table: {
+                head: ['Step', 'Owner', 'Status', 'Time'],
+                rows: [
+                  ['Submitted', 'Sales Ops', 'Done', '09:12'],
+                  ['Steward Review', 'MDM SSC', 'Done', '10:03'],
+                  ['Tax Review', 'FR Tax Lead', 'Open', '10:18']
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  };
+
+  function langCopy() { return copy[app.lang] || copy.zh; }
+  function langContent() { return content[app.lang] || content.zh; }
+
+  function saveNotes() {
+    localStorage.setItem(NOTES_KEY, JSON.stringify(app.notes));
+  }
+
+  function saveUserState() {
+    localStorage.setItem(USER_STATE_KEY, JSON.stringify({ quizAnswers: app.quizAnswers }));
+  }
+
+  function saveOwnerContent() {
+    localStorage.setItem(OWNER_CONTENT_KEY, JSON.stringify(app.ownerContent));
+  }
+
+  function setLang(lang) {
+    app.lang = lang;
+    localStorage.setItem('sapMdLang', lang);
+    render();
+  }
+
+  function ownerMode() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('mode') === 'owner' && sessionStorage.getItem(OWNER_SESSION_KEY) === 'ok';
+  }
+
+  function switchMode(mode) {
+    const url = new URL(window.location.href);
+    if (mode === 'owner') {
+      url.searchParams.set('mode', 'owner');
+    } else {
+      url.searchParams.delete('mode');
+    }
+    window.location.href = url.toString();
+  }
+
+  function ownerExtras() {
+    return app.ownerContent;
+  }
+
+  function addFocusTerm(label) {
+    const queue = document.getElementById('focusQueue');
+    const exists = [...queue.children].some(node => node.textContent === label);
+    if (exists) return;
+    const span = document.createElement('span');
+    span.className = 'nav-chip mono active';
+    span.textContent = label;
+    queue.appendChild(span);
+  }
+
+  function renderHero() {
+    const ui = langCopy();
+    const data = langContent();
+    const extras = ownerExtras();
+    document.title = ui.logo;
+    document.getElementById('logoText').textContent = ui.logo;
+    document.getElementById('offlineBadge').textContent = ui.offlineBadge;
+    document.getElementById('resetNotesBtn').textContent = ui.resetNotes;
+    document.getElementById('heroEyebrow').textContent = ui.heroEyebrow;
+    document.getElementById('heroTitle').innerHTML = ui.heroTitle;
+    document.getElementById('heroCopy').textContent = extras.heroExtra ? `${ui.heroCopy} ${extras.heroExtra}` : ui.heroCopy;
+    document.getElementById('heroHint').textContent = ui.heroHint;
+    document.getElementById('heroPanelLabel').textContent = ui.heroPanelLabel;
+    document.getElementById('heroQueueLabel').textContent = ui.heroQueueLabel;
+    document.getElementById('queueHint').textContent = ui.queueHint;
+    document.getElementById('jumpGovernanceBtn').textContent = ui.govTitle;
+    document.getElementById('jumpGuiBtn').textContent = ui.guiTitle;
+    document.getElementById('openOwnerBtn').textContent = ui.openOwner;
+
+    document.getElementById('statsGrid').innerHTML = data.stats.map(item => `
+      <div class="stat-card">
+        <strong>${item[0]}</strong>
+        <span>${item[1]}</span>
+      </div>
+    `).join('');
+
+    document.getElementById('focusQueue').innerHTML = data.focusTerms.map(term => `<span class="nav-chip mono active">${term}</span>`).join('');
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === app.lang));
+  }
+
+  function renderRoadmap() {
+    const ui = langCopy();
+    document.getElementById('roadmapLabel').textContent = ui.roadmapLabel;
+    document.getElementById('roadmapTitle').textContent = ui.roadmapTitle;
+    document.getElementById('roadmapCopy').textContent = ui.roadmapCopy;
+    document.getElementById('roadmapLeftLabel').textContent = ui.roadmapLeftLabel;
+    document.getElementById('roadmapLeftTitle').textContent = ui.roadmapLeftTitle;
+    document.getElementById('roadmapLeftList').innerHTML = ui.roadmapLeftList.map(item => `<div>${item}</div>`).join('');
+    document.getElementById('roadmapRightLabel').textContent = ui.roadmapRightLabel;
+    document.getElementById('roadmapRightTitle').textContent = ui.roadmapRightTitle;
+    document.getElementById('roadmapRightList').innerHTML = ui.roadmapRightList.map(item => `<div>${item}</div>`).join('');
+  }
+
+  function renderGovernance() {
+    const ui = langCopy();
+    const loops = langContent().loops;
+    const active = loops[app.loopIndex];
+    const extras = ownerExtras();
+    document.getElementById('govLabel').textContent = ui.govLabel;
+    document.getElementById('govTitle').textContent = ui.govTitle;
+    document.getElementById('govCopy').textContent = ui.govCopy;
+    document.getElementById('loopLabel').textContent = ui.loopLabel;
+    document.getElementById('loopDetailLabel').textContent = ui.loopDetailLabel;
+    document.getElementById('loopScenarioLabel').textContent = ui.loopScenarioLabel;
+    document.getElementById('loopTrack').innerHTML = loops.map((item, index) => `
+      <div class="loop-step ${index === app.loopIndex ? 'active' : ''}" data-loop="${index}">
+        <div class="card-label mono">STEP ${index + 1}</div>
+        <div class="card-title">${item.title}</div>
+        <p class="muted">${item.copy}</p>
+      </div>
+    `).join('');
+    document.getElementById('loopDetailTitle').textContent = active.title;
+    document.getElementById('loopDetailCopy').textContent = extras.loopExtra ? `${active.copy} ${extras.loopExtra}` : active.copy;
+    document.getElementById('loopDetailList').innerHTML = active.bullets.map(item => `<div>${item}</div>`).join('');
+    document.getElementById('loopScenarioCopy').textContent = extras.scenarioExtra ? `${active.scenario} ${extras.scenarioExtra}` : active.scenario;
+    document.querySelectorAll('[data-loop]').forEach(node => {
+      node.onclick = () => {
+        app.loopIndex = Number(node.dataset.loop);
+        renderGovernance();
+      };
+    });
+  }
+
+  function renderDomains() {
+    const ui = langCopy();
+    const data = langContent().domains;
+    const active = data[app.domainIndex];
+    document.getElementById('domainLabel').textContent = ui.domainLabel;
+    document.getElementById('domainTitle').textContent = ui.domainTitle;
+    document.getElementById('domainCopy').textContent = ui.domainCopy;
+    document.getElementById('domainGrid').innerHTML = data.map((item, index) => `
+      <div class="insight-card content-panel ${index === app.domainIndex ? 'active' : ''}" data-domain="${index}" style="padding:1rem;">
+        <div class="card-label mono">OBJECT ${index + 1}</div>
+        <div class="card-title">${item.title}</div>
+        <p class="muted">${item.copy}</p>
+      </div>
+    `).join('');
+    document.getElementById('domainDetailLabel').textContent = ui.domainDetailLabel;
+    document.getElementById('domainDetailTitle').textContent = active.title;
+    document.getElementById('domainDetailCopy').textContent = active.copy;
+    document.getElementById('domainDetailList').innerHTML = active.details.map(item => `<div>${item}</div>`).join('');
+    document.getElementById('domainDetailActions').innerHTML = `
+      <button class="ghost-btn mono" id="domainJumpBtn">${ui.domainJump}</button>
+      <button class="ghost-btn mono" id="domainSaveBtn">${ui.domainSave}</button>
+    `;
+    document.getElementById('domainJumpBtn').onclick = () => {
+      app.simScreen = active.action;
+      app.simTab = 0;
+      app.simField = 0;
+      renderSimulator();
+      document.getElementById('guiSection').scrollIntoView({ behavior: 'smooth' });
+    };
+    document.getElementById('domainSaveBtn').onclick = () => addFocusTerm(active.title);
+    document.querySelectorAll('[data-domain]').forEach(node => {
+      node.onclick = () => {
+        app.domainIndex = Number(node.dataset.domain);
+        renderDomains();
+      };
+    });
+  }
+
+  function renderStructure() {
+    const ui = langCopy();
+    document.getElementById('structureLabel').textContent = ui.structureLabel;
+    document.getElementById('structureTitle').textContent = ui.structureTitle;
+    document.getElementById('structureCopy').textContent = ui.structureCopy;
+    document.getElementById('thDomain').textContent = ui.thDomain;
+    document.getElementById('thLevel').textContent = ui.thLevel;
+    document.getElementById('thFields').textContent = ui.thFields;
+    document.getElementById('thRisk').textContent = ui.thRisk;
+    document.getElementById('structureBody').innerHTML = langContent().structureRows.map(row => `
+      <tr>
+        <td>${row[0]}</td>
+        <td>${row[1]}</td>
+        <td>${row[2]}</td>
+        <td>${row[3]}</td>
+      </tr>
+    `).join('');
+  }
+
+  function renderSimulator() {
+    const ui = langCopy();
+    const sim = langContent().sims[app.simScreen];
+    const tab = sim.tabs[app.simTab];
+    const field = tab.fields[app.simField];
+    const extras = ownerExtras();
+
+    document.getElementById('guiLabel').textContent = ui.guiLabel;
+    document.getElementById('guiTitle').textContent = ui.guiTitle;
+    document.getElementById('guiCopy').textContent = extras.guiExtra ? `${ui.guiCopy} ${extras.guiExtra}` : ui.guiCopy;
+    document.getElementById('guiWindowTitle').textContent = ui.guiWindowTitle;
+    document.getElementById('guiMenubar').innerHTML = ui.guiMenubar.map(item => `<span>${item}</span>`).join('');
+    document.getElementById('guiToolbar').innerHTML = ui.guiToolbar.map((item, index) => `<button type="button" class="tool-icon ${index === 2 ? 'active' : ''}">${item}</button>`).join('');
+    document.getElementById('sideNavTitle').textContent = ui.sideNavTitle;
+    document.getElementById('sideStepTitle').textContent = ui.sideStepTitle;
+    document.getElementById('commandLabel').textContent = ui.commandLabel;
+    document.getElementById('simCommand').value = sim.code;
+    document.getElementById('simRunBtn').textContent = ui.run;
+    document.getElementById('tcodeRow').innerHTML = Object.entries(langContent().sims).map(([key, item]) => `
+      <button class="tcode-btn mono ${key === app.simScreen ? 'active' : ''}" data-tcode-screen="${key}">${item.code}</button>
+    `).join('') + `<span class="pill mono" style="color:#425d78;border-color:#a8bbd1;background:#f5f9fe;">${ui.tcodeHint}</span>`;
+    document.getElementById('primaryPanelTitle').textContent = `${sim.title} · ${tab.name}`;
+    document.getElementById('secondaryPanelTitle').textContent = ui.secondaryPanelTitle;
+    document.getElementById('fieldInfoLabel').textContent = ui.fieldInfoLabel;
+    document.getElementById('tcodeInfoLabel').textContent = ui.tcodeInfoLabel;
+    document.getElementById('simLessonLabel').textContent = ui.simLessonLabel;
+    document.getElementById('statusLeft').textContent = ui.statusLeft;
+    document.getElementById('statusRight').textContent = `${sim.code} / ${tab.name}`;
+
+    const screens = Object.keys(langContent().sims);
+    document.getElementById('simLauncher').innerHTML = screens.map(key => `
+      <div class="tree-node ${key === app.simScreen ? 'active' : ''}" data-screen="${key}">${langContent().sims[key].title}</div>
+    `).join('');
+    document.querySelectorAll('[data-screen]').forEach(node => {
+      node.onclick = () => {
+        app.simScreen = node.dataset.screen;
+        app.simTab = 0;
+        app.simField = 0;
+        renderSimulator();
+      };
+    });
+
+    document.querySelectorAll('[data-tcode-screen]').forEach(node => {
+      node.onclick = () => {
+        app.simScreen = node.dataset.tcodeScreen;
+        app.simTab = 0;
+        app.simField = 0;
+        renderSimulator();
+      };
+    });
+
+    document.getElementById('simTree').innerHTML = sim.tree.map((item, index) => `
+      <div class="tree-node ${index === app.simTab ? 'active' : ''}" data-tree="${index}">${item}</div>
+    `).join('');
+    document.querySelectorAll('[data-tree]').forEach(node => {
+      node.onclick = () => {
+        const idx = Number(node.dataset.tree);
+        app.simTab = idx < sim.tabs.length ? idx : 0;
+        app.simField = 0;
+        renderSimulator();
+      };
+    });
+
+    document.getElementById('simTabs').innerHTML = sim.tabs.map((item, index) => `
+      <button class="tab-btn ${index === app.simTab ? 'active' : ''}" data-tab="${index}">${item.name}</button>
+    `).join('');
+    document.querySelectorAll('[data-tab]').forEach(node => {
+      node.onclick = () => {
+        app.simTab = Number(node.dataset.tab);
+        app.simField = 0;
+        renderSimulator();
+      };
+    });
+
+    document.getElementById('fieldGrid').innerHTML = tab.fields.map((item, index) => `
+      <div class="field-card ${index === app.simField ? 'active' : ''}" data-field="${index}">
+        <div class="field-name">${item.name}</div>
+        <div class="field-value">${item.value}</div>
+        <div class="field-meta">${item.meta}</div>
+      </div>
+    `).join('');
+    document.querySelectorAll('[data-field]').forEach(node => {
+      node.onclick = () => {
+        app.simField = Number(node.dataset.field);
+        renderSimulator();
+      };
+    });
+
+    document.getElementById('fieldInfoTitle').textContent = `${field.name} · ${field.value}`;
+    document.getElementById('fieldInfoCopy').textContent = field.explain;
+    document.getElementById('tcodeInfoTitle').textContent = sim.code;
+    document.getElementById('tcodeInfoCopy').textContent = sim.tcodeInfo;
+    document.getElementById('simLessonList').innerHTML = sim.lessons.map(item => `<div>${item}</div>`).join('');
+    document.getElementById('simTableHead').innerHTML = `<tr>${tab.table.head.map(item => `<th>${item}</th>`).join('')}</tr>`;
+    document.getElementById('simTableBody').innerHTML = tab.table.rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('');
+  }
+
+  function renderQuality() {
+    const ui = langCopy();
+    document.getElementById('qualityLabel').textContent = ui.qualityLabel;
+    document.getElementById('qualityTitle').textContent = ui.qualityTitle;
+    document.getElementById('qualityCopy').textContent = ui.qualityCopy;
+    document.getElementById('qualityGrid').innerHTML = langContent().quality.map(item => `
+      <div class="governance-card">
+        <strong>${item[0]}</strong>
+        <p class="muted">${item[1]}</p>
+      </div>
+    `).join('');
+  }
+
+  function renderNotes() {
+    const ui = langCopy();
+    document.getElementById('notesLabel').textContent = ui.notesLabel;
+    document.getElementById('notesTitle').textContent = ui.notesTitle;
+    document.getElementById('notesCopy').textContent = ui.notesCopy;
+    document.getElementById('noteFormLabel').textContent = ui.noteFormLabel;
+    document.getElementById('noteListLabel').textContent = ui.noteListLabel;
+    document.getElementById('noteTitleInput').placeholder = ui.noteTitlePlaceholder;
+    document.getElementById('noteBodyInput').placeholder = ui.noteBodyPlaceholder;
+    document.getElementById('saveNoteBtn').textContent = ui.saveNote;
+    const list = document.getElementById('noteList');
+    if (!app.notes.length) {
+      list.innerHTML = `<div class="note-card"><div class="note-meta">${ui.noteEmpty}</div></div>`;
+      return;
+    }
+    list.innerHTML = app.notes.map(note => `
+      <div class="note-card">
+        <div class="card-title" style="font-size:1rem;">${note.title}</div>
+        <div class="note-meta mono" style="margin-bottom:0.55rem;">${note.createdAt}</div>
+        <p class="muted" style="margin-bottom:0.7rem;">${note.body}</p>
+        <button class="ghost-btn mono" data-note-delete="${note.id}">${ui.noteDelete}</button>
+      </div>
+    `).join('');
+    document.querySelectorAll('[data-note-delete]').forEach(node => {
+      node.onclick = () => {
+        app.notes = app.notes.filter(item => item.id !== node.dataset.noteDelete);
+        saveNotes();
+        renderNotes();
+      };
+    });
+  }
+
+  function renderQuiz() {
+    const ui = langCopy();
+    document.getElementById('quizLabel').textContent = ui.quizLabel;
+    document.getElementById('quizTitle').textContent = ui.quizTitle;
+    document.getElementById('quizCopy').textContent = ui.quizCopy;
+    const quizzes = langContent().quizzes;
+    document.getElementById('quizGrid').innerHTML = quizzes.map((item, index) => {
+      const selected = app.quizAnswers[index];
+      const done = typeof selected === 'number';
+      const cls = done ? (selected === item.correct ? 'correct' : 'wrong') : '';
+      return `
+        <div class="quiz-card content-panel ${cls}" style="padding:1rem;">
+          <div class="card-label mono">Q${index + 1}</div>
+          <div class="card-title">${item.q}</div>
+          <div class="quiz-options">
+            ${item.options.map((opt, idx) => `<button class="quiz-option" data-quiz="${index}" data-answer="${idx}" ${done ? 'disabled' : ''}>${opt}</button>`).join('')}
+          </div>
+          <div class="quiz-feedback">${done ? (selected === item.correct ? ui.quizCorrect : ui.quizWrong) : ''}</div>
+        </div>
+      `;
+    }).join('');
+    document.querySelectorAll('[data-quiz]').forEach(node => {
+      node.onclick = () => {
+        app.quizAnswers[node.dataset.quiz] = Number(node.dataset.answer);
+        saveUserState();
+        renderQuiz();
+      };
+    });
+  }
+
+  function renderDrawer() {
+    const ui = langCopy();
+    document.getElementById('drawerLabel').textContent = ui.drawerLabel;
+    document.getElementById('drawerTitle').textContent = ui.drawerTitle;
+    document.getElementById('drawerCopy').textContent = ui.drawerCopy;
+    document.getElementById('ownerUserInput').placeholder = ui.ownerUserPlaceholder;
+    document.getElementById('ownerPassInput').placeholder = ui.ownerPassPlaceholder;
+    document.getElementById('ownerLoginBtn').textContent = ui.ownerLogin;
+    document.getElementById('sourceLabel').textContent = ui.sourceLabel;
+    document.getElementById('sourceList').innerHTML = ui.sourceList.map(item => `<div>${item}</div>`).join('');
+  }
+
+  function renderOwnerPage() {
+    const ui = langCopy();
+    document.getElementById('ownerEyebrow').textContent = ui.ownerEyebrow;
+    document.getElementById('ownerPageTitle').textContent = ui.ownerPageTitle;
+    document.getElementById('ownerPageCopy').textContent = ui.ownerPageCopy;
+    document.getElementById('previewBtn').textContent = ui.previewBtn;
+    document.getElementById('saveOwnerBtn').textContent = ui.saveOwner;
+    document.getElementById('resetOwnerBtn').textContent = ui.resetOwner;
+    document.getElementById('exitOwnerBtn').textContent = ui.exitOwner;
+    document.getElementById('ownerEditLabel').textContent = ui.ownerEditLabel;
+    document.getElementById('ownerPreviewLabel').textContent = ui.ownerPreviewLabel;
+    document.getElementById('ownerHeroLabel').textContent = ui.ownerHeroLabel;
+    document.getElementById('ownerScenarioLabel').textContent = ui.ownerScenarioLabel2;
+    document.getElementById('ownerLoopLabel').textContent = ui.ownerLoopLabel;
+    document.getElementById('ownerGuiLabel').textContent = ui.ownerGuiLabel;
+    document.getElementById('ownerHeroInput').value = app.ownerContent.heroExtra || '';
+    document.getElementById('ownerScenarioInput').value = app.ownerContent.scenarioExtra || '';
+    document.getElementById('ownerLoopInput').value = app.ownerContent.loopExtra || '';
+    document.getElementById('ownerGuiInput').value = app.ownerContent.guiExtra || '';
+    document.getElementById('previewHeroTitle').textContent = ui.previewHeroTitle;
+    document.getElementById('previewScenarioTitle').textContent = ui.previewScenarioTitle;
+    document.getElementById('previewLoopTitle').textContent = ui.previewLoopTitle;
+    document.getElementById('previewGuiTitle').textContent = ui.previewGuiTitle;
+    document.getElementById('previewHeroCopy').textContent = app.ownerContent.heroExtra || '—';
+    document.getElementById('previewScenarioCopy').textContent = app.ownerContent.scenarioExtra || '—';
+    document.getElementById('previewLoopCopy').textContent = app.ownerContent.loopExtra || '—';
+    document.getElementById('previewGuiCopy').textContent = app.ownerContent.guiExtra || '—';
+  }
+
+  function renderMode() {
+    const isOwner = ownerMode();
+    document.getElementById('userApp').classList.toggle('hidden', isOwner);
+    document.getElementById('ownerApp').classList.toggle('hidden', !isOwner);
+    if (isOwner) {
+      renderOwnerPage();
+    }
+  }
+
+  function render() {
+    renderMode();
+    if (ownerMode()) return;
+    renderHero();
+    renderRoadmap();
+    renderGovernance();
+    renderDomains();
+    renderStructure();
+    renderSimulator();
+    renderQuality();
+    renderNotes();
+    renderQuiz();
+    renderDrawer();
+  }
+
+  function openDrawer() {
+    document.getElementById('overlay').classList.add('active');
+    document.getElementById('ownerDrawer').classList.add('active');
+    document.getElementById('ownerLoginStatus').textContent = '';
+  }
+
+  function closeDrawer() {
+    document.getElementById('overlay').classList.remove('active');
+    document.getElementById('ownerDrawer').classList.remove('active');
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => setLang(btn.dataset.lang));
+  });
+
+  document.getElementById('jumpGovernanceBtn').onclick = () => document.getElementById('governanceSection').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('jumpGuiBtn').onclick = () => document.getElementById('guiSection').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('openOwnerBtn').onclick = openDrawer;
+  document.getElementById('closeDrawerBtn').onclick = closeDrawer;
+  document.getElementById('overlay').onclick = closeDrawer;
+
+  document.getElementById('ownerLoginBtn').onclick = () => {
+    const username = document.getElementById('ownerUserInput').value.trim();
+    const password = document.getElementById('ownerPassInput').value.trim();
+    if (username !== OWNER_USERNAME || password !== OWNER_PASSWORD) {
+      document.getElementById('ownerLoginStatus').textContent = langCopy().ownerLoginFail;
+      return;
+    }
+    sessionStorage.setItem(OWNER_SESSION_KEY, 'ok');
+    const url = new URL(window.location.href);
+    url.searchParams.set('mode', 'owner');
+    window.open(url.toString(), '_blank', 'noopener');
+    closeDrawer();
+  };
+
+  document.getElementById('saveNoteBtn').onclick = () => {
+    const title = document.getElementById('noteTitleInput').value.trim();
+    const body = document.getElementById('noteBodyInput').value.trim();
+    if (!title || !body) return;
+    app.notes.unshift({
+      id: `note-${Date.now()}`,
+      title,
+      body,
+      createdAt: new Date().toLocaleString('zh-CN')
+    });
+    app.notes = app.notes.slice(0, 24);
+    saveNotes();
+    document.getElementById('noteTitleInput').value = '';
+    document.getElementById('noteBodyInput').value = '';
+    document.getElementById('noteStatus').textContent = langCopy().noteSaved;
+    renderNotes();
+  };
+
+  document.getElementById('resetNotesBtn').onclick = () => {
+    app.notes = [];
+    app.quizAnswers = {};
+    saveNotes();
+    saveUserState();
+    renderNotes();
+    renderQuiz();
+  };
+
+  document.getElementById('previewBtn').onclick = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('mode');
+    window.open(url.toString(), '_blank', 'noopener');
+  };
+  document.getElementById('exitOwnerBtn').onclick = () => {
+    sessionStorage.removeItem(OWNER_SESSION_KEY);
+    switchMode('user');
+  };
+
+  document.getElementById('saveOwnerBtn').onclick = () => {
+    app.ownerContent.heroExtra = document.getElementById('ownerHeroInput').value.trim();
+    app.ownerContent.scenarioExtra = document.getElementById('ownerScenarioInput').value.trim();
+    app.ownerContent.loopExtra = document.getElementById('ownerLoopInput').value.trim();
+    app.ownerContent.guiExtra = document.getElementById('ownerGuiInput').value.trim();
+    saveOwnerContent();
+    document.getElementById('ownerStatus').textContent = langCopy().ownerSaved;
+    renderOwnerPage();
+  };
+
+  document.getElementById('resetOwnerBtn').onclick = () => {
+    app.ownerContent = defaultOwnerContent();
+    saveOwnerContent();
+    document.getElementById('ownerStatus').textContent = langCopy().ownerResetDone;
+    renderOwnerPage();
+  };
+
+  window.addEventListener('scroll', () => {
+    const top = document.documentElement.scrollTop || document.body.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    document.getElementById('topProgress').style.width = `${height ? (top / height) * 100 : 0}%`;
+  });
+
+  render();
+</script>
+</body>
+</html>
